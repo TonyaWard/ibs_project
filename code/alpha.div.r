@@ -18,8 +18,7 @@ mc$observed_species <- alpha_divC$obs_species
 mc$simpson <- alpha_divC$simpson
 
 #test alpha diversity across cohorts
-mc$Cohort <- factor(mc$Cohort, levels=c("Healthy", "IBS-C", "IBS-D"))
-
+#mc$Cohort <- factor(mc$Cohort, levels=c("H", "C", "D"))
 
 ktest <- kruskal.test(alpha_divC[,'shannon'], mc[,"Cohort"])
 ktest2 <- kruskal.test(alpha_divC[,'simpson'], mc[,"Cohort"])

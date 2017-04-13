@@ -20,20 +20,22 @@ PCOA$PC4 <- as.numeric(levels(PCOA$PC4))[PCOA$PC4]
 plot1 <- ggplot(PCOA) +
   geom_point(size = 3, aes_string(x = "PC1", y = "PC2", color = "Cohort", alpha=0.75)) + 
   scale_color_manual(values=cols[1:3]) +
-  guides(color=guide_legend(nrow=3)) +
+  guides(color=guide_legend(nrow=3), alpha=F) +
   theme(legend.title=element_blank())
 plot2 <- ggplot(PCOA) +
   geom_point(size = 3, aes_string(x = "PC2", y = "PC3", color = "Cohort", alpha=0.75)) + 
   scale_color_manual(values=cols[1:3]) +
-  guides(color=guide_legend(nrow=3)) +
+  guides(color=guide_legend(nrow=3), alpha=F) +
   theme(legend.title=element_blank())
 plot3 <- ggplot(PCOA) +
   geom_point(size = 3, aes_string(x = "PC3", y = "PC4", color = "Cohort", alpha=0.75)) + 
   scale_color_manual(values=cols[1:3]) +
-  guides(color=guide_legend(nrow=3)) +
+  guides(color=guide_legend(nrow=3), alpha=F) +
   theme(legend.title=element_blank())
 PCOAs <- plot_grid(plot1, plot2, plot3, ncol=2, nrow=2)
-save_plot("PCOAs.pdf", PCOAs, ncol=2)
+pdf("PCOAs.pdf", height=6, width=7)
+plot(PCOAs)
+dev.off()
 
 #Compare beta div distances
 #make stats file

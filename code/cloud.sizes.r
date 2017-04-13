@@ -36,14 +36,14 @@ dotu <- as.matrix(vegdist(x))
 # }
 
 # get all within-patient distances
-m$Vial_ID <- as.numeric(m$Vial_ID)
-patient.nos <- sort(unique(m$Vial_ID))
+m$ID_on_tube <- as.numeric(m$ID_on_tube)
+patient.nos <- sort(unique(m$ID_on_tube))
 wds.sp <- numeric(length(patient.nos))
 names(wds.sp) <- sprintf('Subject_%03d',patient.nos)
-for(i in 1:length(unique(m$Vial_ID))){
+for(i in 1:length(unique(m$ID_on_tube))){
   patient.no <- patient.nos[i]
   # within-patient distances
-  patient.ix <- m$Vial_ID == patient.no
+  patient.ix <- m$ID_on_tube == patient.no
   if(sum(patient.ix, na.rm=TRUE) <= 1){
     wds.sp[i] <- NA
   } else {
@@ -52,7 +52,9 @@ for(i in 1:length(unique(m$Vial_ID))){
     tmp <- tmp[upper.tri(tmp)]
     
     # calculates only distance to previous timepoint
-    # tmp <- sapply(1:(sum(patient.ix)-1), function(ixx) dsp[which(patient.ix)[ixx],which(patient.ix)[ixx+1]])
+    #tmp <- sapply(1:(sum(patient.ix)-1), function(ixx) dsp[which(patient.ix)[ixx],which(patient.ix)[ixx+1]])
+    
+    #total within-cloud distances
     wds.sp[i] <- mean(tmp, na.rm=TRUE)
     
     # calculates all within-cloud distances
@@ -73,10 +75,10 @@ test.ixs <- list('HC v. IBS'=ixc.hc | ixc.ibs,
                  'IBSC v. IBSD'=ixc.ibsc | ixc.ibsd
                 )
 # list of "reference" group names
-compare.to <- list('HC v. IBS'='Healthy',
-                 'HC v. IBSD'='Healthy',
-                 'HC v. IBSC'='Healthy',
-                 'IBSC v. IBSD'='IBS-C'
+compare.to <- list('HC v. IBS'='H',
+                 'HC v. IBSD'='H',
+                 'HC v. IBSC'='H',
+                 'IBSC v. IBSD'='C'
                 )
 
 # run all combinations of tests
