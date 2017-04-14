@@ -1,6 +1,6 @@
 #Calculate Beta Div
 beta_div <- as.matrix(vegdist(x, method = "bray"))
-
+write.csv(beta_div, file="IBS_BrayCurtis.csv", quote=F, row.names=T)
 #PCOA of beta div
 PCOA <- pcoa(beta_div)$vectors
 for(i in 1:ncol(PCOA)){

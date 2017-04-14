@@ -6,7 +6,7 @@ cat('Alpha Diversity tests:\n')
 source("../code/alpha.div.r")
 
 cat('Beta Diversity tests:\n')
-source("../code/beta.div.r") #this needs to be worked on
+source("../code/beta.div.r")
 
 cat('Differential abundance tests:\n')
 source('../code/difftests.r')

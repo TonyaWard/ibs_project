@@ -74,9 +74,9 @@ H.P <-  m$q10_base_q4_symp == 1 & m$Cohort == "H" & !is.na(m$q10_base_q4_symp)
 H.NP <- m$q10_base_q4_symp == 2 & m$Cohort == "H" & !is.na(m$q10_base_q4_symp)
 
 test.ixs <- list('IBSD - P v. IBSD - NP'=  D.P | D.NP,
-                 'IBSC - P v. IBSC - NP'= C.P | C.NP,
-                 'HC - P v. HC - NP'= H.P | H.NP
+                 'IBSC - P v. IBSC - NP'= C.P | C.NP
 )
+m$q10_base_q4_symp <- factor(m$q10_base_q4_symp)
 
 # run all combinations of tests
 for(i in 1:length(test.xs)){
@@ -90,7 +90,7 @@ for(i in 1:length(test.xs)){
     cat(sprintf('Significant q-values for %s, %s:\n',x.name, test.name))
     difftest <- differentiation.test(data.transform(test.x)[test.ix,], m$q10_base_q4_symp[test.ix], parametric=TRUE)
     difftest.np <- differentiation.test(data.transform(test.x)[test.ix,], m$q10_base_q4_symp[test.ix], parametric=FALSE)
-    if(any(difftest$qvalues <= ALPHA)){
+    if(any(na.omit(difftest$qvalues <= ALPHA))){
       signif.ix <- which(difftest$qvalues <= ALPHA)
       signif.ix <- signif.ix[order(difftest$pvalues[signif.ix])]
       pdf(sprintf('differential_abundance_%s_%s.pdf',x.name, test.name),width=4,height=4)
@@ -110,6 +110,65 @@ for(i in 1:length(test.xs)){
         beeswarm(data.transform(test.x)[test.ix,k] ~ droplevels(m$q10_base_q4_symp[test.ix]),
                  xlab='',ylab='Relative abundance', main=colnames(test.x)[k], col=cols[1:4])
         bxplot(data.transform(test.x)[test.ix,k] ~ droplevels(m$q10_base_q4_symp[test.ix]),add=TRUE)
+        # bxplot(test.x[test.ix,col.ix] ~ droplevels(mc$Cohort[test.ix]),add=TRUE)
+      }
+      dev.off()
+    } else {
+      cat("None\n")
+    }
+  }
+}
+
+######################################################################
+#Test for distention differences
+## test species and genus differences
+#test.xs <- list(species=xspc, genus=xgnc)
+test.xs <- list(otu=x)
+m$q13_base_q7_symp <- as.numeric(droplevels(m$q13_base_q7_symp))
+
+# different group comparisons
+D.D <- m$q13_base_q7_symp == 1 & m$Cohort == "D" & !is.na(m$q13_base_q7_symp)
+D.ND <- m$q13_base_q7_symp == 2 & m$Cohort == "D" & !is.na(m$q13_base_q7_symp)
+C.D <-  m$q13_base_q7_symp == 1 & m$Cohort == "C" & !is.na(m$q13_base_q7_symp)
+C.ND <- m$q13_base_q7_symp == 2 & m$Cohort == "C" & !is.na(m$q13_base_q7_symp)
+
+test.ixs <- list('IBSD - D v. IBSD - DP'=  D.D | D.ND,
+                 'IBSC - D v. IBSC - DP'= C.D | C.ND
+)
+m$q13_base_q7_symp <- factor(m$q13_base_q7_symp)
+
+# run all combinations of tests
+for(i in 1:length(test.xs)){
+  x.name <- names(test.xs)[i]
+  test.x <- test.xs[[i]]
+  
+  for(j in 1:length(test.ixs)){
+    test.name <- names(test.ixs)[j]
+    test.ix <- test.ixs[[j]]
+    
+    cat(sprintf('Significant q-values for %s, %s:\n',x.name, test.name))
+    difftest <- differentiation.test(data.transform(test.x)[test.ix,], m$q13_base_q7_symp[test.ix], parametric=TRUE)
+    difftest.np <- differentiation.test(data.transform(test.x)[test.ix,], m$q13_base_q7_symp[test.ix], parametric=FALSE)
+    if(any(na.omit(difftest$qvalues <= ALPHA))){
+      signif.ix <- which(difftest$qvalues <= ALPHA)
+      signif.ix <- signif.ix[order(difftest$pvalues[signif.ix])]
+      pdf(sprintf('differential_abundance_%s_%s.pdf',x.name, test.name),width=4,height=4)
+      for(k in signif.ix){
+        if(!is.null(difftest$norm.test.pvals)){
+          norm.test <- difftest$norm.test.pvals[k]
+        } else {
+          norm.test <- '0'
+        }
+        if(norm.test < 0.05){
+          qval <- difftest.np$qvalues[k]
+        } else {
+          qval <- difftest$qvalues[k]
+        }
+        
+        cat(paste('q=',qval,' taxon: ',colnames(test.x)[k],' ks.test pval=',norm.test,'\n',sep=''))
+        beeswarm(data.transform(test.x)[test.ix,k] ~ droplevels(m$q13_base_q7_symp[test.ix]),
+                 xlab='',ylab='Relative abundance', main=colnames(test.x)[k], col=cols[1:4])
+        bxplot(data.transform(test.x)[test.ix,k] ~ droplevels(m$q13_base_q7_symp[test.ix]),add=TRUE)
         # bxplot(test.x[test.ix,col.ix] ~ droplevels(mc$Cohort[test.ix]),add=TRUE)
       }
       dev.off()

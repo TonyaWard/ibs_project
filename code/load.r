@@ -64,13 +64,17 @@ cat("These samples aren't in the otu table:")
 not_in_otu
 
 #Fill in missing samples:
-m2 <- as.data.frame(t(m))
+m2 <- as.data.frame(t(m), stringsAsFactors = F)
+
 for(i in 1:length(not_in_map)){
   id <- not_in_map[i]
   id2 <- paste(strsplit(id, ".",fixed=T)[[1]][1], strsplit(id, ".",fixed=T)[[1]][2], "0", sep=".")
   m2$new <- m2[,id2]
   colnames(m2)[ncol(m2)] <- id
   m2[14:nrow(m2),id] <- NA
+  m2["Timepoint",id] <- strsplit(id, ".", fixed=T)[[1]][3]
+  m2["SampleID",id] <- id
+  m2["study_vial",id] <- paste(m2["study_id", id], m2["Timepoint", id], sep=".")
 }
 m2 <- as.data.frame(t(m2))
 keeps <- intersect(rownames(x), rownames(m2)) #Now 375 samples overlap between the OTU table and metadata
