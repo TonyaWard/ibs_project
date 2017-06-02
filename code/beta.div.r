@@ -1,6 +1,18 @@
 #Calculate Beta Div
 beta_div <- as.matrix(vegdist(x, method = "bray"))
-write.csv(beta_div, file="IBS_BrayCurtis.csv", quote=F, row.names=T)
+write.csv(beta_div, file="beta_div/IBS_BrayCurtis.csv", quote=F, row.names=T)
+
+######################################################################
+#Adonis to check differences in centroid
+beta_dist = as.dist(beta_div)
+ad = adonis(beta_div ~ m[,"Cohort"], data=m, permutations=999)
+p_val <- ad$aov.tab[1,6]
+r_sq <- ad$aov.tab[1,5]
+#Run Stats for diff. dispersion
+beta_out <- betadisper(beta_dist, m$Cohort)
+p_val_disp <- permutest(beta_out)$tab[1, 6]
+
+######################################################################
 #PCOA of beta div
 PCOA <- pcoa(beta_div)$vectors
 for(i in 1:ncol(PCOA)){
@@ -18,28 +30,37 @@ PCOA$PC3 <- as.numeric(levels(PCOA$PC3))[PCOA$PC3]
 PCOA$PC4 <- as.numeric(levels(PCOA$PC4))[PCOA$PC4]
   
 plot1 <- ggplot(PCOA) +
-  geom_point(size = 3, aes_string(x = "PC1", y = "PC2", color = "Cohort", alpha=0.75)) + 
+  geom_point(size = 3, aes_string(x = "PC1", y = "PC2", color = "Cohort", alpha=0.65)) + 
   scale_color_manual(values=cols[1:3]) +
   guides(color=guide_legend(nrow=3), alpha=F) +
-  theme(legend.title=element_blank())
+  theme(legend.title=element_blank()) +
+  annotate("text", x=-0.3, y=-0.2, label= paste("P=", p_val), size=2.5) +
+  annotate("text", x=-0.3, y=-0.25, label= paste("R2=", round(r_sq, digits=3)), size=2.5)
 plot2 <- ggplot(PCOA) +
-  geom_point(size = 3, aes_string(x = "PC2", y = "PC3", color = "Cohort", alpha=0.75)) + 
+  geom_point(size = 3, aes_string(x = "PC2", y = "PC3", color = "Cohort", alpha=0.65)) + 
   scale_color_manual(values=cols[1:3]) +
   guides(color=guide_legend(nrow=3), alpha=F) +
   theme(legend.title=element_blank())
 plot3 <- ggplot(PCOA) +
-  geom_point(size = 3, aes_string(x = "PC3", y = "PC4", color = "Cohort", alpha=0.75)) + 
+  geom_point(size = 3, aes_string(x = "PC3", y = "PC4", color = "Cohort", alpha=0.65)) + 
   scale_color_manual(values=cols[1:3]) +
   guides(color=guide_legend(nrow=3), alpha=F) +
   theme(legend.title=element_blank())
 PCOAs <- plot_grid(plot1, plot2, plot3, ncol=2, nrow=2)
-pdf("PCOAs.pdf", height=6, width=7)
+pdf("beta_div/PCOAs.pdf", height=8, width=9)
 plot(PCOAs)
 dev.off()
 
+ggplot(PCOA) +
+  geom_point(size = 3, aes_string(x = "PC1", y = "PC2", color = "ID_on_tube", alpha=0.75)) + 
+  scale_color_manual(values=sample(cols2(length(unique(m$ID_on_tube))))) +
+  guides(color=F) +
+  theme(legend.title=element_blank()) 
+
+######################################################################
 #Compare beta div distances
 #make stats file
-file_name <- paste("Beta_Stats.txt", sep='')
+file_name <- paste("beta_div/Beta_Stats.txt", sep='')
 sink(file_name)
 sink()
 
@@ -102,7 +123,7 @@ for(n in 1:(length(test.ixs)-1)){
       
     #assign pdf name for plot
     name1 <- paste(names(test.ixs[n]), names(test.ixs[i]), sep="-")
-    name1 <- paste(name1, ".pdf", sep='')
+    name1 <- paste("beta_div/", name1, ".pdf", sep='')
     pdf(name1, height=4,width=6)
       
     #make beta div box plots
@@ -113,3 +134,11 @@ for(n in 1:(length(test.ixs)-1)){
     dev.off()
   }
 }
+
+
+######################################################################
+#Beta Div over time
+#
+
+
+

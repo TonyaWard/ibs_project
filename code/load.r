@@ -1,6 +1,7 @@
 library("vegan")
 library("RColorBrewer")
 library("ggplot2")
+library("ggpubr")
 library("reshape2")
 library("plyr")
 library('beeswarm')
@@ -11,6 +12,9 @@ library("cowplot")
 library('ROCR')
 library("flux")
 library('randomForest')
+
+#Create output dirs
+source("../code/output.dirs.r")
 
 DATADIR <- '../data/IBS_Mayo_secondrun/'
 #mapfp <- paste(DATADIR,'170118_updated.txt',sep='')
@@ -118,7 +122,8 @@ x <- sweep(x, 1, rowSums(x), '/')
 
 #Collapse by subject
 m$ID_on_tube <- as.integer(m$ID_on_tube)
-xc <- apply(x,2,function(xx) sapply(split(xx,m$ID_on_tube),mean))
+x2 <- x[is.na(m$Flare),] #Leave out Flares!
+xc <- apply(x2,2,function(xx) sapply(split(xx,m$ID_on_tube),mean))
 rownames(xc) <- sprintf('Subject_%03d',sapply(split(m$ID_on_tube,m$ID_on_tube),'[',1))
 
 mc <- m[sapply(split(1:nrow(m),m$ID_on_tube),'[',1),,drop=TRUE]
@@ -140,19 +145,30 @@ mc[mc$Cohort == "Healthy", "Cohort"] <- "H"
 
 # gather differentiation indicies
 ixc.hc <- mc$Cohort == "H"
-ix.hc <- m$Cohort == "H"
+ix.hc <- m$Cohort == "H" & is.na(m$Flare)
 ixc.ibsc <- mc$Cohort == "C"
-ix.ibsc <- m$Cohort == "C"
+ix.ibsc <- m$Cohort == "C" & is.na(m$Flare)
 ixc.ibsd <- mc$Cohort == "D"
-ix.ibsd <- m$Cohort == "D"
+ix.ibsd <- m$Cohort == "D" & is.na(m$Flare)
 ixc.ibs <- mc$Cohort != "H"
-ix.ibs <- m$Cohort != "H"
+ix.ibs <- m$Cohort != "H" & is.na(m$Flare)
 
 cols <- c("#cb1b4a", "#42aeb8", "#FDB316", "#c3c823", "#00797e", "#053058", "#aaada6", "#ae1848", "#368b90", "#ca9012", "#9ba11e", "#f1f2ec", "#d9d3df", "#348fbe", "#ff8340", "#ffAf40", "#bf503f", "#951b72", "#b75f6d")
 cols2 <- colorRampPalette(cols)
+cols_ibs <- c("#FDB316", "#9ba11e")
+cols_dh <- c("#42aeb8","#FDB316")
+cols_ch <- c("#cb1b4a", "#FDB316")
+cols_yn <- c("#951B72", "#AAADA6")
+  
+mc$IBS <- as.character(mc$Cohort)
+mc[mc$IBS == "H", "IBS"] <- "Healthy"
+mc[mc$IBS == "C" | mc$IBS == "D", "IBS"] <- "IBS"
+m$IBS <- as.character(m$Cohort)
+m[m$IBS == "H", "IBS"] <- "Healthy"
+m[m$IBS == "C" | m$IBS == "D", "IBS"] <- "IBS"
 
-mc$Cohort <- factor(mc$Cohort)
-m$Cohort <- factor(m$Cohort)
+mc$IBS <- factor(mc$IBS)
+m$IBS <- factor(m$IBS)
 
 #how many timelines are complete?
 complete_timeline <- c(0, 0, 0)

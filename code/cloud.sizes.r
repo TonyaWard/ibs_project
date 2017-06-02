@@ -68,6 +68,7 @@ for(i in 1:length(unique(m$ID_on_tube))){
 # test species and genus distances
 test.xs <- list(otu=wds.sp)
 #test.xs <- list(species=wds.sp, genus=wds.gn)
+
 # different group comparisons
 test.ixs <- list('HC v. IBS'=ixc.hc | ixc.ibs,
                  'HC v. IBSD'=ixc.hc | ixc.ibsd,
@@ -80,6 +81,8 @@ compare.to <- list('HC v. IBS'='H',
                  'HC v. IBSC'='H',
                  'IBSC v. IBSD'='C'
                 )
+plot_by <- c("IBS", "Cohort", "Cohort", "Cohort")
+col_list <- list(cols_ibs, cols_dh, cols_ch, cols)
 
 # run all combinations of tests
 for(i in 1:length(test.xs)){
@@ -94,15 +97,22 @@ for(i in 1:length(test.xs)){
         tt <- t.test(test.x[test.ix] ~ mc$Cohort[test.ix] != compare.to.name) 
 
         if(tt$p.value < ALPHA) {
-            cat(sprintf('t-test variability, %s, %s: ', x.name, test.name))
-            cat('p=',round(tt$p.value,4), ', t statistic=',round(tt$statistic,4),'\n',sep='')
-
-            pdf(sprintf('variability_%s_%s.pdf',x.name, gsub(' ','_',test.name)),width=4,height=4, useDingbats=FALSE)
-            beeswarm(test.x[test.ix] ~ mc$Cohort[test.ix] != compare.to.name,
-                     xlab=paste(test.name, ' (FALSE is ', compare.to.name,')',sep=''),
-                     ylab='Variability (mean within-subject distance)', col=cols[1:3])
-            bxplot(test.x[test.ix] ~ mc$Cohort[test.ix] != compare.to.name,add=TRUE)
-            dev.off()
+          sink("beta_div/variability.txt", append=T)
+          cat(sprintf('t-test variability, %s, %s: ', x.name, test.name))
+          cat('p=',round(tt$p.value,4), ', t statistic=',round(tt$statistic,4),'\n',sep='')
+          sink()
+          working_mc <- subset(mc, test.ix)
+          working_mc$vari <- subset(test.x, test.ix)
+          plot1 <- ggplot(working_mc, aes_string(x=plot_by[j], y= "vari")) +
+              geom_boxplot(outlier.shape = NA) +
+              geom_jitter(position=position_jitter(0.1), size=3, alpha=0.75, aes_string(color=plot_by[j])) +
+              #theme(legend.position = 'bottom') + 
+              labs(x="", y= "variability") +
+              guides(fill=F, color=F) +
+              scale_color_manual(values=col_list[[j]])
+          pdf(sprintf('beta_div/variability_%s_%s.pdf',x.name, gsub(' ','_',test.name)),width=4,height=4, useDingbats=FALSE)
+          print(plot1)
+          dev.off()
         }
     }
 }
