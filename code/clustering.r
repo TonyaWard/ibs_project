@@ -42,14 +42,14 @@ for(i in 1:length(test.xs)){
           pc <- cmdscale(vegdist(test.x))
           
 
-          pdf(sprintf('beta_div/clustering_%s_%s.pdf',x.name, gsub(' ','_',test.name)),width=4,height=4)
+          pdf(sprintf('beta_div/clustering_%s_%s.pdf',x.name, gsub(' ','_',test.name)),width=4,height=3)
           
           #getting the convex hull of each unique point set
           working_table <- cbind(mc, pc)
           working_table <- subset(working_table, test.ix)
           colnames(working_table)[(ncol(working_table)-1):ncol(working_table)] <- c("PC1", "PC2")
           plot1 <- ggplot(working_table, aes_string(y ="PC1", x="PC2", colour= plot_by[j], fill = plot_by[j])) +
-            geom_point(size = 3) + 
+            geom_point(size = 3, alpha=0.75) + 
             stat_chull(alpha = 0.1, geom = "polygon") +
             scale_fill_manual(values=col_list[[j]]) +
             scale_color_manual(values=col_list[[j]])

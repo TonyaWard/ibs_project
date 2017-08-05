@@ -55,29 +55,53 @@ cat("\nObserved species kruskal test:\n")
 print(ktest3)
 sink()
 
+#Note - MC doesn't have flares
 #assign pdf name for plot
+alpha_plot <- cbind(alpha_divC, mc[,"Cohort"])
+colnames(alpha_plot)[4] <- "Cohort"
+
 file_path <- "alpha_div/alpha_div.pdf"
 pdf(file_path, height=4,width=6)
-boxplot(alpha_divC[,"shannon"] ~ mc[,"Cohort"],
-        xlab='',ylab="shannon", col = cols[1:3])
-boxplot(alpha_divC[,"simpson"] ~ mc[,"Cohort"],
-        xlab='',ylab="simpson", col = cols[1:3])
-boxplot(alpha_divC[,"obs_species"] ~ mc[,"Cohort"],
-        xlab='',ylab="obs_species", col = cols[1:3])
+for(i in 1:3){
+  plot1 <- ggplot(alpha_plot, aes_string(y=colnames(alpha_plot)[i], x="Cohort")) +
+    geom_boxplot(outlier.shape = NA, aes(color=Cohort)) +
+    geom_jitter(position=position_jitter(0.1), size=3, alpha=0.75, aes(color=Cohort)) +
+    labs(x="", y= colnames(alpha_plot)[i]) +
+    guides(fill=F, color=F) +
+    scale_color_manual(values=cols[1:3])
+  plot(plot1)
+}
+dev.off()
+
+#Plot shannon with flares in there too!
+#test for differences (flare no flare)
+C_pval <- wilcox.test(alpha_divC[ixc.ibsc, "shannon"], m[m$Flare == "Flare" & !is.na(m$Flare),"shannon"])$p.value
+D_pval <- wilcox.test(alpha_divC[ixc.ibsd, "shannon"], m[m$Flare == "Flare" & !is.na(m$Flare),"shannon"])$p.value
+  
+file_path <- "alpha_div/alpha_div_flares.pdf"
+pdf(file_path, height=4,width=6)
+plot1 <- ggplot(alpha_plot, aes_string(y="shannon", x="Cohort")) +
+    geom_boxplot(outlier.shape = NA, aes(color=Cohort)) +
+    geom_jitter(position=position_jitter(0.1), size=3, alpha=0.75, aes(color=Cohort)) +
+    labs(x="", y= colnames(alpha_plot)[i]) +
+    guides(fill=F, color=F) +
+    scale_color_manual(values=cols[1:3]) +
+    annotate("text", x=1, y=4.35, label= paste("P=", C_pval), size=4, col="#cb1b4a") +
+    annotate("text", x=2, y=4.25, label= paste("P=", D_pval), size=4, col="#42aeb8") +
+    geom_jitter(size=3, alpha=0.75, shape=17, color= "#c3c823",data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon, x=factor(Cohort)), width = 0.25)
+plot(plot1)
 dev.off()
 
 ######################################################################
-#test alpha diversity changes over time
+#test alpha diversity changes over time, use shannon
 set.seed(30)
 
 working_alpha <- melt(m, id.vars = c("SampleID", "Cohort", "Timepoint", "ID_on_tube"), measure.vars = c("shannon"))
-working_alpha <- droplevels(working_alpha[! working_alpha$Timepoint == "flare",])
+working_alpha <- droplevels(working_alpha[! working_alpha$Timepoint == "Flare",])
 working_alpha$Timepoint <- as.numeric(droplevels(working_alpha$Timepoint))
 working_alpha$ID_on_tube <- factor(working_alpha$ID_on_tube)
   
 ##Permuation based test to see if different from random
-# Using a permutation test and a groupwise average of the test statistic of the spearman correlation, we find clinical relevance but not significance.
-
 working_alpha1 <- droplevels(working_alpha[working_alpha$Cohort =="C",])
 alpha <- working_alpha1$value
 subject <- working_alpha1$ID_on_tube
@@ -116,23 +140,27 @@ figure <- ggplot(working_alpha, aes_string(x="Timepoint", y="value", color="Coho
   annotate("text", x=6, y=4.35, label= paste("P=", round(pval1, digits=3)), size=2, col="#cb1b4a") +
   annotate("text", x=6, y=4.25, label= paste("P=", round(pval2, digits=3)), size=2, col="#42aeb8") +
   annotate("text", x=6, y=4.15, label= paste("P=", round(pval3, digits=3)), size=2, col="#FDB316") +
-  labs(x="Timpoint", y="shannon")
+  labs(x="Timepoint", y="shannon")
 
 file_path <- "alpha_div/alpha_div_time.pdf"
 pdf(file_path, height=4,width=6)
 plot(figure)
 dev.off()
+#drop people with < 3 samples
+working_alpha2 <- with(working_alpha,by(value,ID_on_tube,function(xx)sum(xx > 0)))
 
-figure2 <- ggplot(working_alpha) +
-  #geom_point(size=2, alpha=0.45, aes_string(x="Timepoint", y="value", color="Cohort", group="ID_on_tube")) +
-  geom_line(alpha=0.45, aes_string(x="Timepoint", y="value", color="Cohort", group="ID_on_tube")) +
+#get the flare samples 
+figure2 <- ggplot(working_alpha[working_alpha$ID_on_tube %in% names(which(working_alpha2>=3)),]) +
+  geom_line(aes(x=Timepoint, y=value, color=Cohort, group=ID_on_tube), alpha = .25, stat = "smooth", method = "loess") +
   scale_color_manual(values=c("#cb1b4a", "#42aeb8", "#FDB316")) +
   theme(legend.title=element_blank()) +
-  geom_smooth(method=lm, se=FALSE,  aes_string(x="Timepoint", y="value", color="Cohort", group="Cohort")) +
+  scale_y_continuous(limits = c(2, 4.5))+
+  geom_smooth(method = "loess", se=FALSE,  aes_string(x="Timepoint", y="value", color="Cohort", group="Cohort")) +
   annotate("text", x=6, y=4.35, label= paste("P=", round(pval1, digits=3)), size=2, col="#cb1b4a") +
   annotate("text", x=6, y=4.25, label= paste("P=", round(pval2, digits=3)), size=2, col="#42aeb8") +
   annotate("text", x=6, y=4.15, label= paste("P=", round(pval3, digits=3)), size=2, col="#FDB316") +
-  labs(x="Timpoint", y="shannon")
+  labs(x="Timpoint", y="shannon") +
+  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon, x= Flare_timepoint, color= Cohort), width = 0.25)
 
 file_path <- "alpha_div/alpha_div_time2.pdf"
 pdf(file_path, height=4,width=6)
@@ -177,6 +205,11 @@ total$variance <- as.numeric(as.character(total$variance))
 
 file_path <- "alpha_div/Alpha_Variance.pdf"
 pdf(file_path, height=4,width=6)
-boxplot(total$variance ~ total$Cohort,
-        xlab='',ylab="variance", col = cols[1:3])
+plot1 <- ggplot(total, aes(y=variance, x=Cohort)) +
+    geom_boxplot(outlier.shape = NA, aes(color=Cohort)) +
+    geom_jitter(position=position_jitter(0.1), size=3, alpha=0.75, aes(color=Cohort)) +
+    labs(x="", y= "variance") +
+    guides(fill=F, color=F) +
+    scale_color_manual(values=cols[1:3])
+plot(plot1)
 dev.off()

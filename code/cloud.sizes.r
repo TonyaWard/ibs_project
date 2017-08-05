@@ -1,39 +1,6 @@
 ALPHA <- .05
 
-#dsp <- as.matrix(vegdist(xsp))
-#dgn <- as.matrix(vegdist(xgn))
 dotu <- as.matrix(vegdist(x))
-
-# # get all within-patient distances
-# patient.nos <- sort(unique(m$Patient_no.))
-# wds.sp <- numeric(length(patient.nos))
-# names(wds.sp) <- sprintf('Subject_%03d',patient.nos)
-# wds.gn <- numeric(length(patient.nos))
-# names(wds.gn) <- sprintf('Subject_%03d',patient.nos)
-# for(i in 1:length(unique(m$Patient_no.))){
-#     patient.no <- patient.nos[i]
-#     # within-patient distances
-#     patient.ix <- m$Patient_no. == patient.no
-#     if(sum(patient.ix) == 1){
-#         wds.sp[i] <- NA
-#         wds.gn[i] <- NA
-#     } else {
-#         # calculates all within-cloud distances
-#         tmp <- dsp[patient.ix,patient.ix]
-#         tmp <- tmp[upper.tri(tmp)]
-# 
-#         # calculates only distance to previous timepoint
-#         # tmp <- sapply(1:(sum(patient.ix)-1), function(ixx) dsp[which(patient.ix)[ixx],which(patient.ix)[ixx+1]])
-#         wds.sp[i] <- mean(tmp)
-# 
-#         # calculates all within-cloud distances
-#         tmp <- dgn[patient.ix,patient.ix]
-#         tmp <- tmp[upper.tri(tmp)]
-#         # calculates only distance to previous timepoint
-#         # tmp <- sapply(1:(sum(patient.ix)-1), function(ixx) dgn[which(patient.ix)[ixx],which(patient.ix)[ixx+1]])
-#         wds.gn[i] <- mean(tmp)
-#     }
-# }
 
 # get all within-patient distances
 m$ID_on_tube <- as.numeric(m$ID_on_tube)
