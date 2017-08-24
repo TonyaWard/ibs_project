@@ -39,6 +39,9 @@ source('../code/difftests.r')
 cat('Differential abundance tests:\n')
 source('../code/difftests.modules.r')
 
+cat('Differential abundance tests:\n')
+source('../code/difftests.kegg.r')
+
 cat('Machine Learning:\n')
 source('../code/machine.learning.r')
 

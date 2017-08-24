@@ -213,3 +213,82 @@ plot1 <- ggplot(total, aes(y=variance, x=Cohort)) +
     scale_color_manual(values=cols[1:3])
 plot(plot1)
 dev.off()
+
+######################################################################
+#Test for differences in alpha diversity within patient
+flare_patients <- m[m$Timepoint == "Flare", "study_id"]
+flare_deltas <- list()
+flare_variance <- c()
+flare_variance_all <- list()
+flare_variance_all2 <- list()
+for(i in 1:length(flare_patients)){
+  working_ID <- flare_patients[i]
+  if("Flare" %in% m[m$study_id == working_ID,"Timepoint" ]){
+    flare <- m[m$study_id == working_ID & m$Timepoint == "Flare", "shannon"]
+    flare_deltas[[i]] <- flare - mean(m[m$study_id == working_ID & ! m$Timepoint == "Flare","shannon"])
+    names(flare_deltas)[i] <- working_ID
+    working_changein <- c()
+    working_flare_changein <- c()
+    working_samples <- m[m$study_id == working_ID & ! m$Timepoint == "Flare","shannon"]
+    for(n in 1:(length(working_samples)-1)){
+      working_changein <- c(working_changein, abs(working_samples[n] - working_samples[n +1]))
+    }
+    for(n in 1:(length(working_samples))){
+      working_flare_changein <- c(working_flare_changein, abs(flare - working_samples[n]))
+    }
+    flare_variance <- c(flare_variance, mean(working_changein))
+    
+    flare_variance_all[[i]] <- working_changein
+    names(flare_variance_all)[i] <- working_ID
+    
+    flare_variance_all2[[i]] <- working_flare_changein
+    names(flare_variance_all2)[i] <- working_ID
+  }
+}
+
+# flare_df <- melt(data.frame(flare_deltas, stringsAsFactors = F, check.names = F))
+# flare_df$cohort <- m[m$Timepoint == "Flare", "Cohort"]
+# flare_df$variance <- flare_variance
+# flare_df <- flare_df[order(flare_df$cohort),]
+# flare_df2 <- with(flare_df, flare_df[order(cohort, value) , ])
+# flare_df2$variable <- as.character(flare_df2$variable)
+# flare_df2$variable <- factor(flare_df2$variable, levels = flare_df2$variable)
+
+# ##Try with absolute values
+# flare_df2$value <- abs(flare_df2$value)
+# 
+# #one sample t test (one for D and one for C)
+# D_pvalue <- t.test(flare_df2[flare_df2$cohort == "D","value"], mu=0)$p.value
+# C_pvalue <- t.test(flare_df2[flare_df2$cohort == "C","value"], mu=0)$p.value
+# all_pvalue <- t.test(flare_df2[,"value"], mu=0)$p.value
+
+flare_variance_all <- melt(data.frame(flare_variance_all, stringsAsFactors = F, check.names = F))
+flare_variance_all$variable <- as.character(flare_variance_all$variable)
+colnames(flare_variance_all)[1] <- "study_id"
+flare_variance_all <- merge(flare_variance_all, m[m$Timepoint=="Flare",], by = "study_id" )
+flare_variance_all<- with(flare_variance_all, flare_variance_all[order(Cohort, value) , ])
+flare_variance_all$study_id <- factor(flare_variance_all$study_id, levels = unique(flare_variance_all$study_id))
+
+flare_variance_all2 <- melt(data.frame(flare_variance_all2, stringsAsFactors = F, check.names = F))
+flare_variance_all2$variable <- as.character(flare_variance_all2$variable)
+colnames(flare_variance_all2)[1] <- "study_id"
+flare_variance_all2 <- merge(flare_variance_all2, m[m$Timepoint=="Flare",], by = "study_id" )
+
+
+
+
+file_path <- "alpha_div/within_patient_flares.pdf"
+pdf(file_path, height=4,width=6)
+ggplot(flare_variance_all)+  
+  #geom_bar(stat='identity', aes(fill = cohort)) +
+  geom_boxplot(data=flare_variance_all, aes(x=study_id, y=value, fill=Cohort, color=Cohort), alpha=0.7) +
+  #geom_jitter(data=flare_variance_all, aes(x=study_id, y=value, color=Cohort), width = 0.05, size=2) +
+  geom_boxplot(data=flare_variance_all2, aes(x=study_id, y=value, fill=Flare), fill="#c3c823", color= "#c3c823", alpha=0.7) +
+  #geom_jitter(data=flare_variance_all2, aes(x=study_id, y=value), color="#c3c823", width = 0.05, size=2) +
+  coord_flip() +
+  labs(y="Absolute change in Alpha", x="") +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+  scale_fill_manual(values = c("#cb1b4a", "#42aeb8", "#c3c823")) +
+  scale_color_manual(values = c("#cb1b4a", "#42aeb8", "#c3c823"))
+  #annotate("text", x="10007584", y=-0.75, label= paste("P=", round(all_pvalue, digits=3)), size=4)
+dev.off()

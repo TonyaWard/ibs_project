@@ -3,6 +3,10 @@
 ALPHA <- 0.1
 test.xs <- list(otu=keggc[,c(1:100)])
 
+#get kegg names
+#note, out of 4076 kegg IDs (columns) in table, only 1749 are in the map
+length(which(colnames(keggc)[1:100] %in% k_map$V1)) #only 31 out of 100 are in the map
+
 # different group comparisons
 test.ixs <- list('HC v. IBS'=ixc.hc | ixc.ibs,
                  'HC v. IBSD'=ixc.hc | ixc.ibsd,
@@ -15,6 +19,11 @@ col_list <- list(cols_ibs, cols_dh, cols_ch, cols)
 # run all combinations of tests
 for(i in 1:length(test.xs)){
     x.name <- names(test.xs)[i]
+    for(c in 1:ncol(test.xs[[i]])){
+      if(colnames(test.xs[[i]])[c] %in% k_map$V1){
+        colnames(test.xs[[i]])[c] <- as.character(k_map[k_map$V1 == colnames(test.xs[[i]])[c],"V5"])
+      }
+    }
     test.x <- test.xs[[i]]
 
     for(j in 1:length(test.ixs)){
@@ -115,7 +124,7 @@ for(i in 1:length(test.xs)){
 
 ######################################################################
 #Test for flare differences
-test.xs <- list(otu=kegg)
+test.xs <- list(otu=kegg[,c(1:100)])
 
 # different group comparisons
 D.flare <- m$Cohort == "D" & !is.na(m$Flare)
@@ -136,6 +145,12 @@ col_list <- list(cols_yn, cols_yn)
 # run all combinations of tests
 for(i in 1:length(test.xs)){
   x.name <- names(test.xs)[i]
+  for(c in 1:ncol(test.xs[[i]])){
+    if(colnames(test.xs[[i]])[c] %in% k_map$V1){
+      print(c)
+      colnames(test.xs[[i]])[c] <- as.character(k_map[k_map$V1 == colnames(test.xs[[i]])[c],"V5"])
+    }
+  }
   test.x <- test.xs[[i]]
   
   for(j in 1:length(test.ixs)){
@@ -182,7 +197,7 @@ for(i in 1:length(test.xs)){
 
 ######################################################################
 #Test for pain differences
-test.xs <- list(otu=kegg)
+test.xs <- list(otu=kegg[,c(1:100)])
 
 # different group comparisons
 D.P <- m$q10_base_q4_symp == 1 & m$Cohort == "D" & !is.na(m$q10_base_q4_symp)
@@ -202,6 +217,7 @@ col_list <- list(cols_yn, cols_yn)
 # run all combinations of tests
 for(i in 1:length(test.xs)){
   x.name <- names(test.xs)[i]
+  
   test.x <- test.xs[[i]]
   
   for(j in 1:length(test.ixs)){
@@ -250,7 +266,7 @@ for(i in 1:length(test.xs)){
 
 ######################################################################
 #Test for distention differences
-test.xs <- list(otu=kegg)
+test.xs <- list(otu=kegg[,c(1:100)])
 
 # different group comparisons
 D.D <- m$q13_base_q7_symp == 1 & m$Cohort == "D" & !is.na(m$q13_base_q7_symp)
