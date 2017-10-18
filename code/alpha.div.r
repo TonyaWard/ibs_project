@@ -18,6 +18,15 @@ mc$shannon <- alpha_divC$shannon
 mc$observed_species <- alpha_divC$obs_species
 mc$simpson <- alpha_divC$simpson
 
+#Alpha Div for Biopsies
+alpha_divB <- as.data.frame(diversity(x_bio, index="shannon"))
+colnames(alpha_divB) <- "shannon"
+alpha_divB$simpson <- diversity(x_bio, index="simpson")
+alpha_divB$obs_species <- rowSums(x_bio > 0)
+alpha_divB <- alpha_divB[rownames(m_bio),]
+m_bio$shannon <- alpha_divB$shannon
+m_bio$observed_species <- alpha_divB$obs_species
+m_bio$simpson <- alpha_divB$simpson
 ######################################################################
 #test alpha diversity across cohorts using collapsed
 #using a shapiro test, they aren't normal
@@ -275,8 +284,6 @@ colnames(flare_variance_all2)[1] <- "study_id"
 flare_variance_all2 <- merge(flare_variance_all2, m[m$Timepoint=="Flare",], by = "study_id" )
 
 
-
-
 file_path <- "alpha_div/within_patient_flares.pdf"
 pdf(file_path, height=4,width=6)
 ggplot(flare_variance_all)+  
@@ -291,4 +298,67 @@ ggplot(flare_variance_all)+
   scale_fill_manual(values = c("#cb1b4a", "#42aeb8", "#c3c823")) +
   scale_color_manual(values = c("#cb1b4a", "#42aeb8", "#c3c823"))
   #annotate("text", x="10007584", y=-0.75, label= paste("P=", round(all_pvalue, digits=3)), size=4)
+dev.off()
+
+# Just plot the alpha as a boxplot + the point for the flare sample:
+file_path <- "alpha_div/alpha_div_flares_patients.pdf"
+working_alpha <- m[m$study_id %in% flare_patients,]
+working_alpha$study_id <- factor(working_alpha$study_id)
+pdf(file_path, height=4,width=6)
+plot1 <- ggplot() +
+  geom_boxplot(data = working_alpha[is.na(working_alpha$Flare),], 
+               outlier.shape = NA, aes(y=shannon, x=study_id, color=Cohort)) +
+  geom_jitter(data = working_alpha[is.na(working_alpha$Flare),], 
+              position=position_jitter(0.1), size=3, alpha=0.75, aes(y=shannon, x=study_id, color=Cohort)) +
+  guides(fill=F, color=F) +
+  scale_color_manual(values=cols[1:3]) +
+  geom_jitter(size=3, shape=17, color= "#c3c823",
+              data=working_alpha[working_alpha$Flare == "Flare" & !is.na(working_alpha$Flare),], 
+              width = 0.25, aes(y=shannon, x=study_id)) + 
+  theme(axis.text.x=element_text(angle=90,hjust=1))
+plot(plot1)
+dev.off()
+#Test for paired difference:
+c_outs <- c()
+d_outs <- c()
+all_outs <- list()
+for(i in 1:length(flare_patients)){
+  working_ID <- flare_patients[i]
+  working_table <- m[m$study_id == working_ID,]
+  flare_sample <- working_table[working_table$Flare == "Flare" & !is.na(working_table$Flare), "shannon"]
+  others <-  working_table[is.na(working_table$Flare), "shannon"]
+  if(length(others) < 2){
+    print("only one non-flare")
+  } else {
+    outcome <- t.test(others, mu=flare_sample, alternative="greater", conf.level=0.99)$p.value
+  }
+  if("D" %in% working_table$Cohort){
+    d_outs <- c(d_outs, outcome)
+  } else {
+    c_outs <- c(c_outs, outcome)
+  }
+  all_outs[[i]] <- outcome
+  names(all_outs)[i] <- as.character(working_ID)
+}
+sink("alpha_div/paired_flare_stats.txt")
+print(all_outs)
+sink()
+
+######################################################################
+#Alpha div of biospies before and after
+#keep only paired
+paired_sams <- m_bio[which(duplicated(m_bio$study_id)), "study_id"]
+paired <- m_bio[m_bio$study_id %in% paired_sams,]
+paired$study_id <- factor(paired$study_id)
+
+
+file_path <- "alpha_div/biospy_pairs_shannon.pdf"
+pdf(file_path, height=4,width=6)
+ggplot(paired) +
+  geom_boxplot(aes(x=Timepoint, y= shannon)) +
+  geom_point(aes(x=Timepoint, y= shannon, color=Cohort), size=2) +
+  geom_line(aes(group = study_id, x=Timepoint, y=shannon),
+            alpha = 0.5, colour = "darkgrey") +
+  scale_color_manual(values = c("#cb1b4a", "#42aeb8", "#c3c823"))
+
 dev.off()

@@ -23,7 +23,9 @@ source('../code/risk.index.r')
 #Load file paths for inputs
 DATADIR <- '../data/IBS_Mayo_secondrun/'
 metadata <- paste(DATADIR, "Cleaned_Metadata_wMeds.csv", sep='')
+metadatabiopsy <- paste(DATADIR, "mucosal_bacteria_condensed_metadata_file_v2.csv", sep="")
 taxfp <- paste(DATADIR,'taxatable.txt',sep='')
+taxbiopyfp <- paste(DATADIR, 'taxatable_biopsy.txt', sep="")
 modulefp <- paste(DATADIR, 'predictions.txt', sep='')
 module_mapfp <- paste(DATADIR, 'Kegg_ID_Map.txt', sep='')
 keggfp <- paste(DATADIR, 'shogun_species.kegg.txt', sep='')
@@ -38,9 +40,22 @@ m <- read.delim(metadata,
                    row=1)
 m$SampleID <- rownames(m)
 
+m_bio <- read.delim(metadatabiopsy, 
+                sep=',', 
+                head=T, 
+                comment="",
+                quote="",
+                row=1)
+m_bio$SampleID <- rownames(m_bio)
+m_bio$Timepoint <- gsub("nd", "", m_bio$Timepoint)
+m_bio$Timepoint <- gsub("st", "", m_bio$Timepoint)
+
 #Read in the OTU table, reformat the names of the samples, remove duplicates
 x <- t(read.delim(taxfp, row=1)) #532 samples by 2783 OTUs
 taxa_names <- colnames(x) #store this because it replaces ";" with "." later
+
+x_bio <- t(read.delim(taxbiopyfp, row=1, check.names = F))
+taxa_bio <- colnames(x_bio)
 
 #clean duplicates from the run that was messed up
 rownames(x) <- gsub(".S[0-9]+.R1.001","",rownames(x)) # Clean old plate IDs
@@ -53,6 +68,11 @@ rownames(x2) <- x2$samples
 x <- x2[,!colnames(x2)=="samples"]
 rownames(x) <- gsub("Study.ID.", "", rownames(x)) #now 485 samples
 
+for(r in 1:nrow(x_bio)){
+  rownames(x_bio)[r] <- strsplit(rownames(x_bio)[r], ".", fixed=T)[[1]][1]
+}
+rownames(x_bio)[rownames(x_bio) == "7602"] <- "7602v1"
+
 #Find samples are still not accounted for:
 keeps <- intersect(rownames(x), rownames(m)) #481 samples overlap between the OTU table and metadata
 not_in_map <- rownames(x)[which(!rownames(x) %in% rownames(m))]
@@ -64,6 +84,16 @@ not_in_otu <- rownames(m)[which(!rownames(m) %in% rownames(x))]
 cat("These samples aren't in the otu table:")
 not_in_otu
 #"33.T.1" "50.T.1" "51.T.0" "59.T.1" "63.T.4" "65.T.3" "65.T.4" "65.T.6" "58.T.0"
+
+not_in_biospy <- rownames(m_bio)[which(!rownames(m_bio) %in% rownames(x_bio))]
+patients_no_biopsy <- m_bio$ID_on_tube[which(!rownames(m_bio) %in% rownames(x_bio))]
+cat("these many patients don't have biopsy sequences:")
+unique(patients_no_biopsy)
+cat("These samples aren't in the biopsy otu table:")
+not_in_biospy
+keeps <- intersect(rownames(x_bio), rownames(m_bio))
+x_bio <- x_bio[keeps,]
+m_bio <- m_bio[keeps,]
 
 #remove family samples
 m <- m[! is.na(m$study_id),]
@@ -78,13 +108,21 @@ x <- x[keeps,]
 m$counts <- rowSums(x)
 colnames(x) <- taxa_names #replace proper taxa names
 
+m_bio$counts <- rowSums(x_bio)
+
 #Remove archaea to sep table, archaea = 21
 archaea <- x[,grep("Archaea", colnames(x))]
 m$archaea <- rowSums(archaea)
 
+archea_bio <- x_bio[,grep("Archaea", colnames(x_bio))]
+m_bio$archea <- rowSums(archea_bio)
+
 #Remove viruses/phage to sep table = 274
 viruses <- x[,grep("Viruses", colnames(x))]
 m$viruses <- rowSums(viruses)
+
+viruses_bio <- x_bio[,grep("Viruses", colnames(x_bio))]
+m_bio$viruses <- rowSums(viruses_bio)
 
 #Keep only bacteria
 x <- x[,grep("Bacteria", colnames(x))] #now 2487 OTUs
@@ -92,6 +130,8 @@ m$bacteria <- rowSums(x)
 
 # #Keep species name, or the lowest name listed for the taxon
 x <- t(x)
+
+x_bio <- t(x_bio)
 
 ##keep only species
 #keeps <- grepl("s__", rownames(x)) & ! grepl("s__$", rownames(x))
@@ -120,15 +160,33 @@ for(i in 1:length(split)){
 }
 x <- aggregate(x, by=list(rownames(x)),sum) #aggregate them together, now 1651 taxa
 
+
+split <- strsplit(rownames(x_bio),";")
+for(i in 1:length(split)){
+  if(length(split[[i]]) > 6){
+    rownames(x_bio)[i] <- split[[i]][7] #If it has species, keep that
+  } else {
+    rownames(x_bio)[i] <- paste(split[[i]][1:(length(split[[i]]))],collapse="_") #Or collapse down to most specific
+  }
+}
+x_bio <- aggregate(x_bio, by=list(rownames(x_bio)),sum) #aggregate them together, now 1060 taxa *before = 1174
+
 # ##remove square brackets
 # #x$Group.1 <- gsub("\\[|\\]", "", x$Group.1)
 # #x$Group.1 <- gsub("[.]", "", x$Group.1)
-rownames(x) <- x$Group.1
+rownames(x) <- x$Group.1 #Aggregating store the rownames as a column
 x <- x[,!colnames(x) == "Group.1"]
 x <- t(x)
 
 x.raw <- x #store raw
 x <- sweep(x, 1, rowSums(x), '/') #store RA
+
+rownames(x_bio) <- x_bio$Group.1
+x_bio <- x_bio[,!colnames(x_bio) == "Group.1"]
+x_bio <- t(x_bio)
+
+x_bio_raw <- x_bio #store raw
+x_bio <- sweep(x_bio_raw, 1, rowSums(x_bio_raw), '/') #store RA
 
 #Collapse by subject
 m$ID_on_tube <- as.integer(m$ID_on_tube)
@@ -156,13 +214,17 @@ xc.raw <- apply(x.raw,2,function(xx) sapply(split(xx,m$ID_on_tube),sum))
 rownames(xc.raw) <- sprintf('Subject_%03d',sapply(split(m$ID_on_tube,m$ID_on_tube),'[',1))
 
 # drop rare bugs (show up in less than 10% of subjects)
-# Goes from 1005 to 568 OTUs
-rare.ix <- colMeans(xc > 0) < .25
+# Goes to 1007 OTUs
+rare.ix <- colMeans(xc > 0) < .10
 x.raw <- x.raw[,!rare.ix]
 xc.raw <- xc.raw[,!rare.ix]
 xc_flares <- xc_flares[,!rare.ix]
 x <- x[,!rare.ix]
 xc <- xc[,!rare.ix]
+
+rare.ix <- colMeans(x_bio > 0) < .05
+x_bio_raw <- x_bio_raw[,!rare.ix]
+x_bio <- x_bio[,!rare.ix]
 
 # Load Modules
 modules <- read.table(modulefp, header=T, sep='\t', row=1, comment='')
@@ -250,6 +312,11 @@ ix.ibsd <- m$Cohort == "D" & is.na(m$Flare)
 ixc.ibs <- mc$Cohort != "H"
 ix.ibs <- m$Cohort != "H" & is.na(m$Flare)
 
+ixcb.hc <- m_bio$Cohort == "H"
+ixcb.ibs <- m_bio$Cohort != "H"
+ixcb.ibsd <- m_bio$Cohort == "D"
+ixcb.ibsc <- m_bio$Cohort == "C"
+
 cols <- c("#cb1b4a", "#42aeb8", "#FDB316", "#c3c823", "#00797e", "#053058", "#aaada6", "#ae1848", "#368b90", "#2823c8",  "#ca9012", "#124cca", "#9ba11e", "#f1f2ec", "#d9d3df", "#348fbe", "#ff8340", "#ffAf40", "#bf503f", "#503fbf", "#951b72", "#b75f6d")
 cols2 <- colorRampPalette(cols)
 cols_ibs <- c("#FDB316", "#9ba11e")
@@ -284,6 +351,21 @@ for(i in 1:length(unique(m$study_id))){
   }
 }
 print("Complete Timelines:")
+print(complete_timeline)
+
+#How many have paired biopsies?
+complete_timeline <- c(0, 0, 0)
+names(complete_timeline) <- c("H", "C", "D")
+for(i in 1:length(unique(m_bio$study_id))){
+  working <- unique(m_bio$study_id)[i]
+  if(! is.na(working)){
+    if(length(which(m_bio$study_id == working)) == 2){
+      cohort <- as.character(m_bio[which(m_bio$study_id == working),"Cohort"])[1]
+      complete_timeline[cohort] <- c(complete_timeline[cohort] + 1)
+    }
+  }
+}
+print("2 biopsies:")
 print(complete_timeline)
 
 #what are the average number of samples each person has?
