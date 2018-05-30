@@ -68,4 +68,7 @@ source('../code/riskindex.r')
 cat('Metabolomics Correlations:\n')
 source('../code/metabolomics.r')
 
+cat('Transcriptome:\n')
+source('../code/transcriptome.r')
+
 

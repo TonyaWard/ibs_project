@@ -1,0 +1,73 @@
+SampleID,study_id,Timepoint,ID on tube,Cohort,Age,BMI,Gender,"Race (1=white, 2=african american/black, 3 = asain, 4= american indian, 5= pacific islander)","Mode of birth (1=C-section, 2=vaginal, 3= don't know)","Mode of feeding (1=bottle, 2=breast, 3=both, 4= don't know)",abdominal pain severity (1-100),Pain over 10 days (0-100),abdominal distension severity (0-100) ,bowel habit dissatisfaction (0-100),Effect on life in general (0-100),IBS symptom severity (1-500),HAD Anxiety score,HAD Depression score,"Fatigue  (0-10, 10= greastest possible fatigue)","Emotional or psychological health (1=excellent, 2= very good, 3 = good, 4= fair, 5= poor, 6= don't know)"," heartburn (over 30 days; 1=no, 2=yes)","diet soft drinks/ day (1=none, 2=1 to 2, 3= 3 to 4, 4= 5 to 6, 5 = 7 to 9, 6 = 10 or more servings)"," soft drinks/day (1=none, 2=1 to 2, 3= 3 to 4, 4= 5 to 6, 5 = 7 to 9, 6 = 10 or more servings)","strenous excerise/week (1=none, 2=1 times,3=2 times, 4=3 times, 5=4 times, 6=5 times, 7=6 times, 8= 7 times, 9 = 8 times or more)","moderate excerise/week (1=none, 2=1 times,3=2 times, 4=3 times, 5=4 times, 6=5 times, 7=6 times, 8= 7 times, 9 = 8 times or more)","mild excerise/week (1=none, 2=1 times,3=2 times, 4=3 times, 5=4 times, 6=5 times, 7=6 times, 8= 7 times, 9 = 8 times or more)","alcohol  (over past12 months; 1=never, 2= once a month, 3= 2 to 4 times a month, 4= 2 to 3 times a week, 5= 4 to 5 times a week, 6= 6 or more times a week)","100 cigarettes in your entire life (1=no, 2=yes, 3 = don't know)","cigarettes/day (current or past; 1= 1 to 10, 2= 11 to 20, 3=21 to 30, 4= 31 to 40, 5= 41 or more)","Antibiotic in the past month? (1=no, 2=yes)",Antibiotic used," probiotic in the past 2 weeks (1=no, 2=yes)",Probiotic used,baseline.medications
+7541v1,10007541,1st,3,H,42,26.22,F,1,2,3,NA,NA,NA,NA,NA,NA,4,0,2,1,1,1,1,3,4,7,3,1,NA,NA,NA,NA,NA,acyclovir; Aleve-D Sinus & Headache; hydrocortisone cream
+7541v2,10007541,2nd,3,H,42,26.22,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,doxycycline_100_mg_capsules_b_i_d__for_10_days;_Diflucan_150_mg_one_tab,1,NA,NA
+7542v1,10007542,1st,4,C,54,28.91,F,1,2,2,29,30,0,75,40,174,0,1,5,2,1,1,1,1,2,9,4,2,2,NA,NA,NA,NA,albuterol; Aleve; amoxicillin prior to dental procedures; Ativan; Benadryl; cholecalciferol; codeine; epinephrine prn; eszopiclone; ibuprofen prn; multivitamin; Retin-A; Sonata; triamcinolone acetonide dental paste; triamcinolone acetonide cream
+7544v1,10007544,1st,6,D,59,26.29,M,1,2,3,56,100,80,81,91,408,12,12,8,4,1,NA,1,1,2,8,2,2,1,NA,NA,NA,NA,aspirin; dicyclomine; hydrochlorothiazide; amlodipine besylate; metoprolol; omeprazole; pravastatin; albuterol; duloxetine
+7544v2,10007544,2nd,6,D,59,26.29,M,NA,NA,NA,0,0,0,51,30,81,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7547v1,10007547,1st,9,C,63,58.93,F,1,2,1,86,30,0,75,45,236,5,5,8,4,2,1,1,1,1,3,3,1,NA,NA,NA,NA,NA,cyclobenzaprine; diclofenac-misoprostol; hydrocodone-acetaminophen; hydroxyzine pamoate; Imitrex; Levsin; nortriptyline; omeprazole; oxybutynin; prochlorperazine; Synthroid; verapamil
+7547v2,10007547,2nd,9,C,63,58.93,F,NA,NA,NA,0,50,45,73,40,208,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7548v1,10007548,1st,10,C,52,19.38,F,1,2,1,0,0,0,61,40,101,0,0,0,2,1,1,1,7,7,2,2,1,NA,NA,NA,NA,NA,Fiber tablet; folic acid; multivitamin; Phillip's caplets; vitamin B-12
+7548v2,10007548,2nd,10,C,52,19.38,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+7549v1,10007549,1st,11,H,35,27.02,M,1,2,2,NA,NA,NA,NA,NA,NA,0,0,0,2,2,2,1,3,1,1,5,2,1,NA,NA,NA,NA,sumatriptan; Thrive M capsules (Bacillus subtilis; Bacillus coagulans; Bacillus indicus HU36); Thrive shake
+7549v2,10007549,2nd,11,H,35,27.02,M,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,Thrive_by_Le-Vel_(Bacillus_subtilis__Bacillus_coagulans__and_Bacillus_indicus_HU36),NA
+7554v1,10007554,1st,16,D,28,22.6,F,1,2,3,0,0,45,81,55,181,4,1,5,2,1,1,1,2,6,5,1,3,NA,NA,NA,NA,NA,biotin; chondroitin; One-A-Day vitamins
+7556v1,10007556,1st,18,C,20,27.31,F,1,2,4,44,40,41,97,86,308,11,7,3,2,2,1,2,2,2,2,1,1,NA,NA,NA,NA,NA,Adderall XR; Adderall prn; aluminum chloride; Ortho Tri-Cyclen; Zofran; Zomig
+7556v2,10007556,2nd,18,C,20,27.31,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7557v1,10007557,1st,19,H,54,31.5,F,1,2,1,NA,NA,NA,NA,NA,NA,2,0,1,1,1,1,1,1,2,6,3,1,NA,NA,NA,NA,NA,acetaminophen-codeine; atenolol; cyclobenzaprine; Imitrex; Lipitor; Synthroid; trazodone; Vivelle-Dot; Z-Bec
+7557v2,10007557,2nd,19,H,54,31.5,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7558v1,10007558,1st,20,C,57,23.9,F,1,2,3,0,0,0,19,29,48,6,2,3,3,1,1,1,1,3,3,1,1,NA,NA,NA,NA,NA,calcium carbonate; Centrum; Citrucel; Prozac; lactate prn
+7559v1,10007559,1st,21,D,28,19.3,F,1,2,2,0,0,0,29,12,41,2,1,3,5,1,1,2,1,1,3,4,1,NA,NA,NA,NA,NA,Cymbalta
+7559v2,10007559,2nd,21,D,28,19.3,F,NA,NA,NA,62,50,62,60,100,334,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7561v1,10007561,1st,23,D,35,33.2,M,1,2,1,40,0,34,100,81,255,10,15,4,3,2,4,1,2,2,2,4,2,1,NA,NA,NA,NA,diazepam; hydroxyzine; ibuprofen; Imodium A-D; Lactaid; Pepcid AC; Wellbutrin; Zyrtec
+7561v2,10007561,2nd,23,D,35,33.2,M,NA,NA,NA,34,50,63,85,75,307,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7562v1,10007562,1st,24,H,52,25.64,F,NA,2,1,NA,NA,NA,NA,NA,NA,4,0,0,2,1,1,1,1,6,2,4,1,NA,NA,NA,NA,NA,calcium citrate; Flexeril; fluocinolone; glucosamine-chondroitin; multivitamin; zolpidem
+7562v2,10007562,2nd,24,H,52,25.64,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,FemFlora,NA
+7563v1,10007563,1st,25,H,25,23.28,F,1,1,4,NA,NA,NA,NA,NA,NA,9,6,3,4,1,3,1,6,1,9,3,1,NA,NA,NA,NA,NA,Ativan prn; Gianvi; trazodone prn
+7563v2,10007563,2nd,25,H,25,23.28,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7564v1,10007564,1st,26,H,28,23.65,F,1,2,3,NA,NA,NA,NA,NA,NA,7,2,8,3,1,1,1,2,3,3,4,1,NA,NA,NA,NA,NA,NA
+7564v2,10007564,2nd,26,H,28,23.65,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7565v1,10007565,1st,27,D,26,22.1,F,1,2,2,0,0,0,65,60,125,8,9,3,3,1,1,1,9,9,9,2,1,NA,NA,NA,NA,NA,Differin; Alesse
+7565v2,10007565,2nd,27,D,26,22.1,F,NA,NA,NA,55,50,50,66,66,287,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,She_doesn't_remember_the_name____it_was_perioperative_for_a_study_she_was_on_last_Thursday_12/3_,2,kumbacha,NA
+7566v1,10007566,1st,28,D,28,30.05,M,1,3,3,0,20,0,70,40,130,15,8,7,5,1,1,4,2,7,5,3,1,NA,NA,NA,NA,NA,buspirone; Flonase; ibuprofen
+7567v1,10007567,1st,29,D,31,22.5,M,1,3,3,0,0,0,51,32,83,6,4,2,3,2,1,1,7,3,3,3,1,NA,NA,NA,NA,NA,albuterol prn; fish oil
+7567v2,10007567,2nd,29,D,31,22.5,M,NA,NA,NA,29,20,28,71,50,198,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7569v1,10007569,1st,31,H,26,30.34,M,3,3,1,NA,NA,NA,NA,NA,NA,2,4,3,2,1,1,1,6,6,3,3,2,1,NA,NA,NA,NA,NA
+7569v2,10007569,2nd,31,H,26,30.34,M,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7572v1,10007572,1st,34,D,42,38.27,F,1,2,1,0,0,50,95,81,226,7,4,8,2,2,1,1,5,9,9,3,1,NA,NA,NA,NA,NA,Flonase; loratadine; ProAir HFA
+7572v2,10007572,2nd,34,D,42,38.27,F,NA,NA,NA,22,30,24,32,30,138,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,Yogurt,NA
+7578v1,10007578,1st,40,D,38,25.26,M,1,2,2,0,0,0,70,61,131,6,1,3,2,2,1,1,4,2,2,4,1,NA,NA,NA,NA,NA,amitriptyline; hyoscyamine; multivitamin
+7578v2,10007578,2nd,40,D,38,25.26,M,NA,NA,NA,21,70,47,70,38,246,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7581v1,10007581,1st,43,D,31,35.7,F,1,2,3,78,60,34,83,65,320,3,0,8,3,1,1,1,2,4,4,3,2,2,NA,NA,NA,NA,NA
+7581v2,10007581,2nd,43,D,31,35.7,F,NA,NA,NA,0,0,0,93,19,112,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,She_said_it_was_Mexonidaviol___1_tablet_2_x_a_day_500_mg___started_3/3/2016,1,NA,NA
+7583v1,10007583,1st,45,C,31,30.5,F,1,2,2,88,60,72,82,90,392,7,6,4,3,1,1,2,2,7,7,3,2,1,NA,NA,NA,NA,albuterol; Celexa; docusate; naproxen; Sprintec
+7584v1,10007584,1st,46,D,53,35.3,F,1,3,1,70,30,20,72,81,273,9,9,7,3,2,1,1,1,4,6,6,2,4,NA,NA,NA,NA,albuterol; Celexa; clonazepam; Flovent HFA; Imitrex; Imitrex Statdose pen; losartan; oxybutynin; pramipexole; Protonix; Wellbutrin
+7584v2,10007584,2nd,46,D,53,35.3,F,NA,NA,NA,5,10,6,80,55,156,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7587v1,10007587,1st,49,H,53,27.15,M,1,2,3,NA,NA,NA,NA,NA,NA,4,0,1,2,1,1,1,1,2,8,5,2,1,NA,NA,NA,NA,Advil; multivitamin
+7587v2,10007587,2nd,49,H,53,27.15,M,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,Regular_plain_yogurt,NA
+7589v1,10007589,1st,51,C,37,25.02,F,1,2,4,66,80,12,91,72,321,4,8,7,4,2,1,1,2,7,7,2,1,NA,NA,NA,NA,NA,Citrucel powder; culturette tab; melatonin; multivitamin; peppermint gel; Sprintec; 
+7590v1,10007590,1st,52,D,30,25.26,F,1,1,3,0,30,32,71,49,182,7,3,4,3,1,1,1,5,5,7,3,1,NA,NA,NA,NA,NA,albuterol; Diflucan; Flonase; ibuprofen; Levsin; lidocaine; metronidazole; Mirena IUD; nortriptyline; Tylenol Extra Strength; Zantac
+7590v2,10007590,2nd,52,D,30,25.26,F,NA,NA,NA,0,0,0,0,0,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7594v1,10007594,1st,56,D,59,24.44,M,1,2,3,0,0,25,65,61,151,4,4,1,1,2,1,1,1,1,1,6,2,1,NA,NA,NA,NA,low-dose aspirin; sildenafil
+7594v2,10007594,2nd,56,D,59,24.44,M,NA,NA,NA,60,60,39,70,40,269,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7595v1,10007595,1st,57,C,24,24.55,F,1,2,2,29,30,39,50,29,177,2,1,3,2,2,1,1,6,4,6,3,1,NA,NA,NA,NA,NA,Leena; multivitamin; Vitron-C
+7595v2,10007595,2nd,57,C,24,24.55,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,Greek_Yogurt,NA
+7602v1,10007599,1st,61,H,30,37.4,M,1,2,3,NA,NA,NA,NA,NA,NA,7,4,0,4,1,1,2,2,4,8,4,2,2,NA,NA,NA,NA,caprylic acid; Garden of Life probiotic veggie caplets; Modicon; multivitamin; 
+7602v2,10007600,1st,62,D,24,,F,,,,,,,,,,,,,,,,,,,,,,,,,,,
+7605v1,10007602,1st,64,C,54,33.84,F,1,2,1,32,50,41,61,71,255,7,5,1,3,1,2,1,1,8,9,1,2,2,NA,NA,NA,NA,clobetasol; ibuprofen; levothyroxine; Lexapro; multivitamin; naproxen; senna/sennosides; Tylenol Arthritis
+7605v2,10007602,2nd,64,C,54,33.84,F,NA,NA,NA,36,90,70,100,70,366,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,Yoplait_Yogurt,NA
+7606v1,10007603,1st,65,H,23,26.72,F,1,2,4,NA,NA,NA,NA,NA,NA,2,2,1,1,1,1,1,1,4,9,3,1,NA,NA,NA,NA,NA,Mirena IUD
+7606v2,10007605,1st,67,H,34,26.59,M,1,2,3,NA,NA,NA,NA,NA,NA,3,0,0,3,1,1,1,5,2,9,3,1,NA,NA,NA,NA,NA,NA
+7607v1,10007606,1st,68,C,43,30.77,F,1,2,1,35,10,77,100,70,292,3,1,3,3,2,2,2,1,3,8,3,2,1,NA,NA,NA,NA,Ambien; Ativan; Cymbalta; melatonin; metformin; Mirena IUD; Ritalin prn; simvastatin; Synthroid
+7607v2,10007606,2nd,68,C,43,30.77,F,NA,NA,NA,71,10,78,100,62,321,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7608v1,10007607,1st,69,C,24,19.99,F,1,1,3,35,30,81,81,29,256,10,4,6,4,1,1,1,1,4,3,2,1,NA,NA,NA,NA,NA,acetaminophen; Dramamine; EpiPen; ibuprofen; Alesse; oxycodone; tramadol; valcyclovir; Zofran
+7608v2,10007607,2nd,69,C,24,19.99,F,NA,NA,NA,0,0,0,70,50,120,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7610v1,10007608,1st,70,C,36,26.4,F,1,2,2,0,0,0,69,29,98,6,0,8,4,1,1,1,4,NA,4,3,1,NA,NA,NA,NA,NA,aspirin; doxylamine succinate; duloxetine; elemental iron-ascorbic acid; ibuprofen; levothyroxine; propranolol; terbinafine; triamcinolone acetonide cream
+7610v2,10007608,2nd,70,C,36,26.4,F,NA,NA,NA,0,0,0,60,49,109,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,2,Greek_yogurt_once_or_twice_per_week,NA
+7611v1,10007610,1st,72,C,42,36.96,F,1,2,1,0,0,19,52,0,71,4,2,0,4,1,2,1,6,6,6,3,1,NA,NA,NA,NA,NA,Alesse; sertraline; triamcinolone acetonide cream; Tylenol Extra Strength
+7611v2,10007610,2nd,72,C,42,36.96,F,NA,NA,NA,0,0,0,51,0,51,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
+7613v1,10007611,1st,73,C,27,20.71,F,1,1,4,0,0,29,60,51,140,9,4,3,3,1,1,1,4,6,8,2,2,1,NA,NA,NA,NA,Adapalene cream; clindamycin phosphate solution topical; Mirena IUD; spironolactone
+7613v2,10007611,2nd,73,C,27,20.71,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+7615v1,10007613,1st,75,H,59,22.45,F,1,2,3,NA,NA,NA,NA,NA,NA,0,2,0,2,1,1,1,5,7,8,5,1,NA,NA,NA,NA,NA,ibuprofen; PreserVision AREDS
+7615v2,10007615,1st,77,C,45,30.77,F,1,2,3,51,10,35,81,61,238,5,3,5,3,2,1,1,1,1,2,4,1,NA,NA,NA,NA,NA,Aleve; Excedrin Migraine; fluoxetine; omeprazole; Voltaren gel
+7616v1,10007616,1st,78,H,24,24.56,F,1,1,1,NA,NA,NA,NA,NA,NA,15,1,6,4,1,1,1,4,3,9,4,1,NA,NA,NA,NA,NA,cetirizine; ferrous sulfate; multivitamin; sertraline; Skyla
+7616v2,10007616,2nd,78,H,24,24.56,F,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,1,NA,NA
