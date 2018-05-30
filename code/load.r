@@ -1,3 +1,4 @@
+#Set your working directory to be a new directory within this main one
 library('vegan')
 library('RColorBrewer')
 library('ggplot2')
@@ -22,21 +23,24 @@ source('../code/risk.index.r')
 
 #Load file paths for inputs
 DATADIR <- '../data/IBS_Mayo_secondrun/'
-metadata <- paste(DATADIR, "Cleaned_Metadata_wMeds.csv", sep='')
+metadata <- paste(DATADIR, "Final_Cleaned_Condensed_Metadata.csv", sep='')
 metadatabiopsy <- paste(DATADIR, "mucosal_bacteria_condensed_metadata_file_v2.csv", sep="")
-taxfp <- paste(DATADIR,'taxatable.txt',sep='')
-taxbiopyfp <- paste(DATADIR, 'taxatable_biopsy.txt', sep="")
-modulefp <- paste(DATADIR, 'predictions.txt', sep='')
+taxfp <- paste(DATADIR,'/shogun_output/id_update/taxatable.burst.capitalist.txt',sep='')
+taxbiopyfp <- paste(DATADIR, '/shogun_output_biopsy/taxatable.burst.capitalist.txt', sep="")
+taxALLfp <- paste(DATADIR, 'stool_biopsy_otus.txt', sep="")
+modulefp <- paste(DATADIR, '/shogun_output/id_update/taxatable.strain.kegg.modules.txt', sep='')
 module_mapfp <- paste(DATADIR, 'Kegg_ID_Map.txt', sep='')
-keggfp <- paste(DATADIR, 'shogun_species.kegg.txt', sep='')
+keggfp <- paste(DATADIR, '/shogun_output/id_update/taxatable.strain.kegg.txt', sep='')
 keggmapfp <- paste(DATADIR, "ko-enzyme-annotations.txt", sep='')
+pathwayfp <- paste(DATADIR, '/shogun_output/id_update/taxatable.strain.kegg.pathways.txt', sep='')
+trans1_fp <- paste(DATADIR, "NormalizedExpression_DEGs_T1.txt", sep ="")
+trans2_fp <- paste(DATADIR, "NormalizedExpression_DEGs_T2.txt", sep ="")
 
 #Load metadata (this was generated with metadata_prep.r)
 m <- read.delim(metadata, 
                    sep=',', 
                    head=T, 
                    comment="",
-                   quote="",
                    row=1)
 m$SampleID <- rownames(m)
 
@@ -51,27 +55,11 @@ m_bio$Timepoint <- gsub("nd", "", m_bio$Timepoint)
 m_bio$Timepoint <- gsub("st", "", m_bio$Timepoint)
 
 #Read in the OTU table, reformat the names of the samples, remove duplicates
-x <- t(read.delim(taxfp, row=1)) #532 samples by 2783 OTUs
+x <- t(read.delim(taxfp, row=1, check.names=F, as.is =T)) #532 samples by 2783 OTUs
 taxa_names <- colnames(x) #store this because it replaces ";" with "." later
 
-x_bio <- t(read.delim(taxbiopyfp, row=1, check.names = F))
+x_bio <- t(read.delim(taxbiopyfp, row=1, check.names = F, as.is=T))
 taxa_bio <- colnames(x_bio)
-
-#clean duplicates from the run that was messed up
-rownames(x) <- gsub(".S[0-9]+.R1.001","",rownames(x)) # Clean old plate IDs
-x <- data.frame(x[order(rownames(x)),]) # Sort nicely by sample ID, OLDs will be second
-x$samples <- rownames(x)
-x$samples <- gsub(".OLD","",x$samples) # remove OLD and NPM
-x$samples <- gsub(".NPM", "", x$samples) #532
-x2 <- x[match(unique(x$samples), x$samples),] #keep first instance of dups (new run)
-rownames(x2) <- x2$samples   
-x <- x2[,!colnames(x2)=="samples"]
-rownames(x) <- gsub("Study.ID.", "", rownames(x)) #now 485 samples
-
-for(r in 1:nrow(x_bio)){
-  rownames(x_bio)[r] <- strsplit(rownames(x_bio)[r], ".", fixed=T)[[1]][1]
-}
-rownames(x_bio)[rownames(x_bio) == "7602"] <- "7602v1"
 
 #Find samples are still not accounted for:
 keeps <- intersect(rownames(x), rownames(m)) #481 samples overlap between the OTU table and metadata
@@ -97,8 +85,9 @@ m_bio <- m_bio[keeps,]
 
 #remove family samples
 m <- m[! is.na(m$study_id),]
+
 #Keep only samples with 10000 counts
-#original = 485 samples, 2783 OTUs --> this includes virsuses, Euks, Arch, etc.
+#original = 485 samples, 2343 OTUs 
 x <- x[rowSums(x) > 10000,] #477 samples pass 
 keeps <- intersect(rownames(x), rownames(m))
 m <- m[keeps,]
@@ -125,12 +114,11 @@ viruses_bio <- x_bio[,grep("Viruses", colnames(x_bio))]
 m_bio$viruses <- rowSums(viruses_bio)
 
 #Keep only bacteria
-x <- x[,grep("Bacteria", colnames(x))] #now 2487 OTUs
-m$bacteria <- rowSums(x) 
+xb <- x[,grep("Bacteria", colnames(x))] #now 2487 OTUs
+m$bacteria <- rowSums(xb) 
 
 # #Keep species name, or the lowest name listed for the taxon
 x <- t(x)
-
 x_bio <- t(x_bio)
 
 ##keep only species
@@ -158,7 +146,7 @@ for(i in 1:length(split)){
     rownames(x)[i] <- paste(split[[i]][1:(length(split[[i]]))],collapse="_") #Or collapse down to most specific
   }
 }
-x <- aggregate(x, by=list(rownames(x)),sum) #aggregate them together, now 1651 taxa
+x <- aggregate(x, by=list(rownames(x)),sum) #aggregate them together, now 2209 taxa
 
 
 split <- strsplit(rownames(x_bio),";")
@@ -169,7 +157,7 @@ for(i in 1:length(split)){
     rownames(x_bio)[i] <- paste(split[[i]][1:(length(split[[i]]))],collapse="_") #Or collapse down to most specific
   }
 }
-x_bio <- aggregate(x_bio, by=list(rownames(x_bio)),sum) #aggregate them together, now 1060 taxa *before = 1174
+x_bio <- aggregate(x_bio, by=list(rownames(x_bio)),sum) #aggregate them together, now 873 taxa *before = 1174
 
 # ##remove square brackets
 # #x$Group.1 <- gsub("\\[|\\]", "", x$Group.1)
@@ -187,6 +175,17 @@ x_bio <- t(x_bio)
 
 x_bio_raw <- x_bio #store raw
 x_bio <- sweep(x_bio_raw, 1, rowSums(x_bio_raw), '/') #store RA
+
+rownames(x_bio) <- gsub(" ", "_", rownames(x_bio))
+rownames(x_bio_raw) <- gsub(" ", "_", rownames(x_bio_raw))
+#Write these to output so you can merge in QIIME!
+file_name <- paste(DATADIR, "modified_stool_otus.txt", sep="")
+cat("#OTUID\t", file=file_name)
+write.table(t(x.raw), file=file_name, append=T, row.names = T, quote=F, sep="\t")
+
+file_name <- paste(DATADIR, "modified_biopsy_otus.txt", sep="")
+cat("#OTUID\t", file=file_name)
+write.table(t(x_bio_raw), file=file_name, append=T, row.names = T, quote=F, sep="\t")
 
 #Collapse by subject
 m$ID_on_tube <- as.integer(m$ID_on_tube)
@@ -214,7 +213,7 @@ xc.raw <- apply(x.raw,2,function(xx) sapply(split(xx,m$ID_on_tube),sum))
 rownames(xc.raw) <- sprintf('Subject_%03d',sapply(split(m$ID_on_tube,m$ID_on_tube),'[',1))
 
 # drop rare bugs (show up in less than 10% of subjects)
-# Goes to 1007 OTUs
+# Goes to 1095 OTUs
 rare.ix <- colMeans(xc > 0) < .10
 x.raw <- x.raw[,!rare.ix]
 xc.raw <- xc.raw[,!rare.ix]
@@ -223,29 +222,48 @@ x <- x[,!rare.ix]
 xc <- xc[,!rare.ix]
 
 rare.ix <- colMeans(x_bio > 0) < .05
-x_bio_raw <- x_bio_raw[,!rare.ix]
+x_bio_raw <- x_bio_raw[,!rare.ix] #450 taxa
 x_bio <- x_bio[,!rare.ix]
 
+#Load the full OTU table (combed in qiime and mod names, etc)
+x_all <- t(read.delim(taxALLfp, row=1, skip=1, check.names=F, as.is =T)) #546 samples by 1545 OTUs
+taxa_names <- colnames(x_all) #store this because it replaces ";" with "." later
+m$sType <- m$Flare
+m$sType <- as.character(m$sType)
+m["sType"][is.na(m["sType"])] <- "Stool"
+m_bio$sType <- rep("Biopsy", nrow(m_bio))
+
+map_cols <- intersect(colnames(m), colnames(m_bio))
+m_all <- data.frame(rbind(m[,map_cols], m_bio[,map_cols]))
+
+keeps <- intersect(rownames(x_all), rownames(m_all))
+x_all <- x_all[keeps,] #546 samples
+m_all <- m_all[keeps,]
+
+x_all.raw <- x_all #store raw
+x_all <- sweep(x_all, 1, rowSums(x_all), '/') #store RA
+
+# drop rare bugs (show up in less than 5 subjects)
+# Goes to 1095 OTUs
+rare.ix <- colSums(x_all > 0) < 5
+x_all.raw <- x_all.raw[,!rare.ix]
+x_all <- x_all[,!rare.ix] #1501 OTUs
+
 # Load Modules
-modules <- read.table(modulefp, header=T, sep='\t', row=1, comment='')
+modules <- t(read.table(modulefp, header=T, sep='\t', row=1, comment='', check.names = F, as.is=T))
+modules <- modules[rownames(m),]
 modules <- modules[,colSums(modules)>0]
 rare.ix <- colMeans(modules > 0) < .25
 modules <- modules[,!rare.ix]
-rownames(modules) <- gsub(".S[0-9]+.R1.001","",rownames(modules)) # Clean old plate IDs
-modules <- data.frame(modules[order(rownames(modules)),]) # Sort nicely by sample ID, OLDs will be second
-modules$samples <- rownames(modules)
-modules$samples <- gsub(".OLD","",modules$samples) # remove OLD and NPM
-modules$samples <- gsub(".NPM", "", modules$samples) #532
-modules2 <- modules[match(unique(modules$samples), modules$samples),] #keep first instance of dups (new run)
-rownames(modules2) <- modules2$samples
-modules <- modules2[,!colnames(modules2)=="samples"]
-rownames(modules) <- gsub("Study.ID.", "", rownames(modules)) #now 485 samples
+
 coef.variation <- function(xx) {
   sqrt(var(xx))/mean(xx)
 }
+
+modules <- data.frame(modules)
+colnames(modules) <- gsub("\\.", "",colnames(modules))
 co_varies <- sapply(modules[,colnames(modules)],coef.variation)
 modules <- modules[,colnames(modules)[order(co_varies, decreasing = T)]]
-modules <- modules[rownames(m),]
 
 #Collapse by subject
 modules2 <- modules[!m$Timepoint == "Flare",] #Leave out Flares!
@@ -268,26 +286,18 @@ modulesc_flares <- apply(modules,2,function(xx) sapply(split(xx,m$ID_on_tube),me
 rownames(modulesc_flares) <- sprintf('Subject_%03d',sapply(split(m$ID_on_tube,m$ID_on_tube),'[',1))
 
 # Load KEGG
-kegg <- t(read.table(keggfp, header=T, sep='\t', row=1, comment='')) #532 samples by 6669 kegg
-kegg <- kegg[,colSums(kegg)>0]
+kegg <- t(read.table(keggfp, header=T, sep='\t', row=1, comment='', check.names=F, as.is=T)) #532 samples by 6669 kegg
+kegg <- kegg[rownames(m),]
+kegg <- kegg[,colSums(kegg)>1]
 rare.ix <- colMeans(kegg > 0) < .25
 kegg <- kegg[,!rare.ix] #now 532 samples by 4076 kegg
-rownames(kegg) <- gsub(".S[0-9]+.R1.001","",rownames(kegg)) # Clean old plate IDs
-kegg <- data.frame(kegg[order(rownames(kegg)),]) # Sort nicely by sample ID, OLDs will be second
-kegg$samples <- rownames(kegg)
-kegg$samples <- gsub(".OLD","",kegg$samples) # remove OLD and NPM
-kegg$samples <- gsub(".NPM", "", kegg$samples) #532
-kegg2 <- kegg[match(unique(kegg$samples), kegg$samples),] #keep first instance of dups (new run)
-rownames(kegg2) <- kegg2$samples
-kegg <- kegg2[,!colnames(kegg2)=="samples"]
-rownames(kegg) <- gsub("Study.ID.", "", rownames(kegg)) #now 485 samples
 
 k_map <- read.table(keggmapfp, sep='\t', comment='') #6451 keggs
 keeps <- intersect(colnames(kegg), k_map$V1)
 k_map <- k_map[k_map$V1 %in% keeps,] #now 1876
-co_varies <- sapply(kegg[,colnames(kegg)],coef.variation) 
-kegg <- kegg[,colnames(kegg)[order(co_varies, decreasing = T)]] #order by covariance
-kegg <- kegg[rownames(m),]
+#co_varies <- sapply(kegg[,colnames(kegg)],coef.variation) 
+#kegg <- kegg[,colnames(kegg)[order(co_varies, decreasing = T)]] #order by covariance
+
 
 #Collapse by subject
 kegg2 <- kegg[!m$Timepoint == "Flare",] #Leave out Flares!
@@ -298,9 +308,6 @@ rownames(keggc) <- sprintf('Subject_%03d',sapply(split(m$ID_on_tube,m$ID_on_tube
 #keggf_flares will be collapsed with flares
 keggc_flares <- apply(kegg,2,function(xx) sapply(split(xx,m$ID_on_tube),mean))
 rownames(keggc_flares) <- sprintf('Subject_%03d',sapply(split(m$ID_on_tube,m$ID_on_tube),'[',1))
-
-#there were a couple of mis-labeled as Healthy instead of H
-m[m$Cohort == "Healthy" & !is.na(m$Cohort), "Cohort"] <- "H"
 
 # gather differentiation indicies
 ixc.hc <- mc$Cohort == "H"
@@ -336,7 +343,6 @@ mc$IBS <- factor(mc$IBS)
 m$IBS <- factor(m$IBS)
 
 m$Cohort <- as.character(m$Cohort)
-m$Cohort[is.na(m$Cohort)] <- "family"
 
 #how many timelines are complete?
 complete_timeline <- c(0, 0, 0)

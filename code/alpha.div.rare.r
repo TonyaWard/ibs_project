@@ -152,7 +152,7 @@ figure2 <- ggplot(working_alpha[working_alpha$ID_on_tube %in% names(which(workin
   annotate("text", x=6, y=4.25, label= paste("P=", round(pval2, digits=3)), size=2, col="#42aeb8") +
   annotate("text", x=6, y=4.15, label= paste("P=", round(pval3, digits=3)), size=2, col="#FDB316") +
   labs(x="Timpoint", y="shannon") +
-  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon_rare, x= Flare_timepoint, color= Cohort), width = 0.25)
+  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon_rare, x= Flare_timepoint.x, color= Cohort), width = 0.25)
 
 file_path <- "alpha_div/rare/alpha_div_time2.pdf"
 pdf(file_path, height=4,width=6)

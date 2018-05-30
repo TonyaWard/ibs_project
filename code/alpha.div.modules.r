@@ -142,7 +142,7 @@ figure2 <- ggplot(working_alpha[working_alpha$ID_on_tube %in% names(which(workin
   annotate("text", x=6, y=4.25, label= paste("P=", round(pval2, digits=3)), size=2, col="#42aeb8") +
   annotate("text", x=6, y=4.15, label= paste("P=", round(pval3, digits=3)), size=2, col="#FDB316") +
   labs(x="Timpoint", y="shannon") +
-  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon_modules, x= Flare_timepoint, color= Cohort), width = 0.25)
+  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon_modules, x= Flare_timepoint.x, color= Cohort), width = 0.25)
 
 file_path <- "modules/alpha_div/alpha_div_time2.pdf"
 pdf(file_path, height=4,width=6)
@@ -195,3 +195,52 @@ plot1 <- ggplot(total, aes(y=variance, x=Cohort)) +
     scale_color_manual(values=cols[1:3])
 plot(plot1)
 dev.off()
+
+######################################################################
+#Plot flare kegg alphas
+# Just plot the alpha as a boxplot + the point for the flare sample:
+file_path <- "modules/alpha_div/alpha_div_flares_patients.pdf"
+flare_patients <- m[m$Timepoint == "Flare", "study_id"]
+working_alpha <- m[m$study_id %in% flare_patients,]
+working_alpha$study_id <- factor(working_alpha$study_id)
+pdf(file_path, height=4,width=6)
+plot1 <- ggplot() +
+  geom_boxplot(data = working_alpha[is.na(working_alpha$Flare),], 
+               outlier.shape = NA, aes(y=shannon_modules, x=study_id, color=Cohort)) +
+  geom_jitter(data = working_alpha[is.na(working_alpha$Flare),], 
+              position=position_jitter(0.1), size=3, alpha=0.75, aes(y=shannon_modules, x=study_id, color=Cohort)) +
+  guides(fill=F, color=F) +
+  scale_color_manual(values=cols[1:3]) +
+  geom_jitter(size=3, shape=17, color= "#c3c823",
+              data=working_alpha[working_alpha$Flare == "Flare" & !is.na(working_alpha$Flare),], 
+              width = 0.25, aes(y=shannon_modules, x=study_id)) + 
+  theme(axis.text.x=element_text(angle=90,hjust=1))+
+  facet_grid(.~ Cohort, space="free", scales="free")
+plot(plot1)
+dev.off()
+#Test for paired difference:
+c_outs <- c()
+d_outs <- c()
+all_outs <- list()
+for(i in 1:length(flare_patients)){
+  working_ID <- flare_patients[i]
+  working_table <- m[m$study_id == working_ID,]
+  flare_sample <- working_table[working_table$Flare == "Flare" & !is.na(working_table$Flare), "shannon_modules"]
+  others <-  working_table[is.na(working_table$Flare), "shannon_modules"]
+  if(length(others) < 2){
+    print("only one non-flare")
+  } else {
+    outcome <- t.test(others, mu=flare_sample, alternative="two.sided", conf.level=0.99)$p.value
+  }
+  if("D" %in% working_table$Cohort){
+    d_outs <- c(d_outs, outcome)
+  } else {
+    c_outs <- c(c_outs, outcome)
+  }
+  all_outs[[i]] <- outcome
+  names(all_outs)[i] <- as.character(working_ID)
+}
+sink("modules/alpha_div/paired_flare_stats.txt")
+print(all_outs)
+sink()
+

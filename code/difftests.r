@@ -79,59 +79,81 @@ for(i in 1:length(test.xs)){
     }
 }
 
-# ######################################################################
-# #Heatmap of diff taxa
-# 
-# ## test species and genus differences
-# #test.xs <- list(species=xspc, genus=xgnc)
-# test.xs <- list(otu=xc[,which(colMeans(xc) > 0.00001)])
-# # different group comparisons
-# test.ixs <- list('HC v. IBS'=ixc.hc | ixc.ibs,
-#                  'HC v. IBSD'=ixc.hc | ixc.ibsd,
-#                  'HC v. IBSC'=ixc.hc | ixc.ibsc,
-#                  'IBSC v. IBSD'=ixc.ibsc | ixc.ibsd
-# )
-# plot_by <- c("IBS", "Cohort", "Cohort", "Cohort")
-# col_list <- list(cols_ibs, cols_dh, cols_ch, cols)
-# 
-# i <- 1
-# x.name <- names(test.xs)[i]
-# test.x <- test.xs[[i]]
-#   
-# for(j in 1:length(test.ixs)){
-#   test.name <- names(test.ixs)[j]
-#   test.ix <- test.ixs[[j]]
-#   difftest <- differentiation.test(data.transform(test.x)[test.ix,], mc$Cohort[test.ix], parametric=TRUE)
-#   difftest.np <- differentiation.test(data.transform(test.x)[test.ix,], mc$Cohort[test.ix], parametric=FALSE)
-#   if(any(difftest$qvalues <= ALPHA)){
-#     signif.ix <- which(difftest$qvalues <= ALPHA)
-#     signif.ix <- signif.ix[order(difftest$pvalues[signif.ix])]
-#     #subset to keep only taxa sig.
-#     new_table <- data.transform(test.x)[test.ix,signif.ix]
-#     #new_table <- new_table[,colSums(new_table) > 0.1]
-#     new_map <- mc[test.ix,]
-#     #order by pval
-#     taxa_order <- names(signif.ix)
-#     #or by taxon abundance
-#     #taxa_order <- colnames(new_table[1:(ncol(new_table)-3)])[order(colSums(new_table[,1:(ncol(new_table)-3)]))] #set the taxa order
-#     new_table <- new_table[,taxa_order]
-#     sample_order <- rownames(new_table[order(rowSums(new_table)),])
-#     new_table <- cbind(new_table, new_map[,c("Cohort", "IBS")])
-#     new_table$subject_id <- rownames(new_table)
-#     new_table2 <- melt(new_table, ids=c("Cohort", "IBS", "subject_id"))
-#     #new_table$variable <- factor(new_table$variable, levels=healthy_order)
-#     #new_table2$subject_id <- factor(new_table2$subject_id, levels=sample_order)
-#     plot1 <- ggplot(new_table2, aes(x = subject_id, y = variable)) + 
-#       geom_tile(aes(fill = value)) + 
-#       scale_fill_gradient(name = 'relative abundance', low = 'white', high = 'purple') +
-#       facet_grid(~Cohort, scales="free") +
-#       theme(axis.title.y = element_blank(), axis.text.x=element_blank(),axis.title.x = element_blank())
-#     pdf_name <- paste("diff_taxa/",test.name, "heatmap.pdf", sep="")
-#     pdf(pdf_name,width=12,height=8)
-#     plot(plot1)
-#     dev.off()
-#   }
-# }
+####################################################################
+#heatmap of diff taxa
+
+taxa_list <- c("s__[Clostridium]_glycyrrhizinilyticum",
+               "s__[Clostridium]_innocuum",
+               "s__Alistipes_obesi",
+               "s__[Ruminococcus]_gnavus",
+               "s__[Ruminococcus]_torques",
+               "s__Adlercreutzia_equolifaciens",
+               "s__Alistipes_finegoldii",
+               "s__Alistipes_ihumii",
+               "s__Alistipes_putredinis",
+               "s__Alistipes_senegalensis",
+               "s__Alistipes_shahii",
+               "s__Anaerostipes_hadrus",
+               "s__Bifidobacterium_animalis",
+               "s__Coprococcus_sp._HPP0048",
+               "s__Eisenbergiella_tayi",
+               "s__Faecalitalea_cylindroides",
+               "s__Fournierella_massiliensis",
+               "s__Intestinimonas_butyriciproducens",
+               "s__Intestinimonas_massiliensis",
+               "s__Methanobrevibacter_smithii",
+               "s__Oscillibacter_sp._ER4",
+               "s__Roseburia_intestinalis",
+               "s__Ruminococcaceae_bacterium_D16",
+               "s__Ruminococcus_sp._AT10",
+               "s__Ruthenibacterium_lactatiformans",
+               "s__Streptococcus_parasanguinis",
+               "s__Subdoligranulum_variabile")
+
+taxa_sub <- x[,taxa_list]
+taxa_sub <- melt(taxa_sub)
+colnames(taxa_sub) <- c("SampleID", "Taxa", "Relative_Abundance")
+taxa_sub <- merge(taxa_sub, m[,c("Cohort", "SampleID")], by="SampleID")
+taxa_sub$Cohort <- factor(taxa_sub$Cohort, levels=c("C", "H", "D"))
+taxa_sub$Taxa <- gsub("s__", "", taxa_sub$Taxa)
+taxa_sub$Taxa <- factor(taxa_sub$Taxa, levels=rev(c(
+  "[Clostridium]_innocuum",
+  "Ruthenibacterium_lactatiformans",
+  "Alistipes_finegoldii",
+  "Ruminococcus_sp._AT10",
+  "[Ruminococcus]_torques",
+  "Streptococcus_parasanguinis",
+  "Alistipes_obesi",
+  "Fournierella_massiliensis",
+  "Intestinimonas_massiliensis",
+  "Alistipes_senegalensis",
+  "Alistipes_shahii",
+  "Coprococcus_sp._HPP0048",
+  "[Ruminococcus]_gnavus",
+  "Oscillibacter_sp._ER4",
+  "Intestinimonas_butyriciproducens",
+  "[Clostridium]_glycyrrhizinilyticum",
+  "Eisenbergiella_tayi",
+  "Subdoligranulum_variabile",
+  "Alistipes_ihumii",
+  "Anaerostipes_hadrus",
+  "Adlercreutzia_equolifaciens",
+  "Alistipes_putredinis",
+  "Methanobrevibacter_smithii",
+  "Roseburia_intestinalis",
+  "Ruminococcaceae_bacterium_D16",
+  "Bifidobacterium_animalis",
+  "Faecalitalea_cylindroides"
+)))
+taxa_sub$Relative_Abundance2 <- cut(taxa_sub$Relative_Abundance, c(0,0.1,0.2,0.3,0.4))
+pdf("diff_taxa/heat_map.pdf", height = 6, width=5)
+ggplot(taxa_sub, aes(x=SampleID, y=Taxa))+
+  geom_tile(aes(fill=Cohort, alpha=Relative_Abundance)) +
+  facet_grid(. ~ Cohort, scales="free", space="free") +
+  scale_fill_manual(values=cols[c(1,3,2)]) +
+  theme(axis.text.x =element_blank()) +
+  guides(alpha=F, fill=F)
+dev.off()
 
 ######################################################################
 #Test for flare differences

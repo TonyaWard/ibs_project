@@ -169,7 +169,7 @@ figure2 <- ggplot(working_alpha[working_alpha$ID_on_tube %in% names(which(workin
   annotate("text", x=6, y=4.25, label= paste("P=", round(pval2, digits=3)), size=2, col="#42aeb8") +
   annotate("text", x=6, y=4.15, label= paste("P=", round(pval3, digits=3)), size=2, col="#FDB316") +
   labs(x="Timpoint", y="shannon") +
-  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon, x= Flare_timepoint, color= Cohort), width = 0.25)
+  geom_jitter(size=1.5, data=m[m$Flare == "Flare" & !is.na(m$Flare),], aes(y=shannon, x= Flare_timepoint.x, color= Cohort), width = 0.25)
 
 file_path <- "alpha_div/alpha_div_time2.pdf"
 pdf(file_path, height=4,width=6)
@@ -314,8 +314,9 @@ plot1 <- ggplot() +
   scale_color_manual(values=cols[1:3]) +
   geom_jitter(size=3, shape=17, color= "#c3c823",
               data=working_alpha[working_alpha$Flare == "Flare" & !is.na(working_alpha$Flare),], 
-              width = 0.25, aes(y=shannon, x=study_id)) + 
-  theme(axis.text.x=element_text(angle=90,hjust=1))
+              width = 0.01, aes(y=shannon, x=study_id)) + 
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  facet_grid(.~ Cohort, space="free", scales="free")
 plot(plot1)
 dev.off()
 #Test for paired difference:
@@ -359,6 +360,16 @@ ggplot(paired) +
   geom_point(aes(x=Timepoint, y= shannon, color=Cohort), size=2) +
   geom_line(aes(group = study_id, x=Timepoint, y=shannon),
             alpha = 0.5, colour = "darkgrey") +
-  scale_color_manual(values = c("#cb1b4a", "#42aeb8", "#c3c823"))
+  scale_color_manual(values = c("#cb1b4a", "#42aeb8", "#FDB316"))
+
+dev.off()
+
+file_path <- "alpha_div/biospy_pairs_shannon_depth.pdf"
+pdf(file_path, height=4,width=6)
+ggplot(paired) +
+  geom_point(aes(x=counts, y= shannon, color=Cohort), size=2) +
+  geom_line(aes(group = study_id, x=counts, y=shannon),
+            alpha = 0.5, colour = "darkgrey") +
+  scale_color_manual(values = c("#cb1b4a", "#42aeb8", "#FDB316"))
 
 dev.off()
