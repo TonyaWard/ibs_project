@@ -225,7 +225,7 @@ rare.ix <- colMeans(x_bio > 0) < .05
 x_bio_raw <- x_bio_raw[,!rare.ix] #450 taxa
 x_bio <- x_bio[,!rare.ix]
 
-#Load the full OTU table (combed in qiime and mod names, etc)
+#Load the full OTU table (combined in qiime and mod names, etc)
 x_all <- t(read.delim(taxALLfp, row=1, skip=1, check.names=F, as.is =T)) #546 samples by 1545 OTUs
 taxa_names <- colnames(x_all) #store this because it replaces ";" with "." later
 m$sType <- m$Flare
@@ -324,7 +324,12 @@ ixcb.ibs <- m_bio$Cohort != "H"
 ixcb.ibsd <- m_bio$Cohort == "D"
 ixcb.ibsc <- m_bio$Cohort == "C"
 
-cols <- c("#cb1b4a", "#42aeb8", "#FDB316", "#c3c823", "#00797e", "#053058", "#aaada6", "#ae1848", "#368b90", "#2823c8",  "#ca9012", "#124cca", "#9ba11e", "#f1f2ec", "#d9d3df", "#348fbe", "#ff8340", "#ffAf40", "#bf503f", "#503fbf", "#951b72", "#b75f6d")
+cols <- c("#cb1b4a", "#42aeb8", "#FDB316", "#c3c823", "#00797e", 
+          "#053058", "#aaada6", "#ae1848", "#368b90", "#2823c8",  
+          "#ca9012", "#124cca", "#9ba11e", "#f1f2ec", "#d9d3df", 
+          "#348fbe", "#ff8340", "#ffAf40", "#bf503f", "#503fbf", 
+          "#951b72", "#b75f6d")
+plot(1:22, 1:22, col=cols, pch=19, cex=3, xlab="", ylab="")
 cols2 <- colorRampPalette(cols)
 cols_ibs <- c("#FDB316", "#9ba11e")
 cols_dh <- c("#42aeb8","#FDB316")
