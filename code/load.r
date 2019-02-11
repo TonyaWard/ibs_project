@@ -396,7 +396,6 @@ print("Average Length of Timelines:")
 print(average_timeline)
 
 #Number of subjects with < 3 samples
-average_timeline <- c(0, 0, 0)
 names(average_timeline) <- c("H", "C", "D")
 for(i in 1:length(unique(m$study_id))){
   working <- unique(m$study_id)[i]

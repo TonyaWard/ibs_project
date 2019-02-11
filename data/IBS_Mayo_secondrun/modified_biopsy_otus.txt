@@ -1,0 +1,16 @@
+anova results for biopsies:                                   Df Sum Sq Mean Sq F value Pr(>F)  
+factor(together_table[, "Cohort"])  2 0.2936 0.14682   3.617 0.0467 *
+Residuals                          19 0.7712 0.04059                 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = together_table[, "dist"] ~ factor(together_table[, "Cohort"]))
+
+$`factor(together_table[, "Cohort"])`
+           diff        lwr          upr     p adj
+D-C -0.17840446 -0.4427013  0.085892352 0.2255799
+H-C -0.26674869 -0.5310455 -0.002451877 0.0476835
+H-D -0.08834423 -0.3838370  0.207148587 0.7316570
+

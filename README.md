@@ -20,8 +20,8 @@ Usage:
 
 1. make a new directory inside the main directory. For example: Analysis_TodaysDate
 
-2. From within the new directory, load R and call the main r script:
+2. From within the new directory, load R and call the load and figure scripts:
 ```
 R
-source('../code/ddw-run-all.r')
+source('../code/load.r')
 ```

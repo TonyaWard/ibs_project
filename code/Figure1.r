@@ -270,7 +270,7 @@ Distance_Collapsed <- ggplot(distance_table, aes(x=Comparison, y=Variability)) +
   geom_boxplot(fill=NA, outlier.color = NA) +
   scale_color_manual(values=c(cols[1], cols[4], cols[3], cols[6], cols[2])) +
   labs(y = "Mean Distance") +
-  guides(color=F) +
+  guides(color=F)
 
 ##### 
 # Plot Diversity by Time
